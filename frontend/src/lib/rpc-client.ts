@@ -1,5 +1,5 @@
 import { hc } from 'hono/client';
-import type { AppType } from '@backend/index';
+import type { AppType } from '@backend/rpc';
 import { env } from '@/config/env';
 
 /**
