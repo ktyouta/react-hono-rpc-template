@@ -11,6 +11,7 @@ export const errorHandler: ErrorHandler<AppEnv> = (err, c) => {
   const requestId = c.get("requestId") || "-";
 
   console.error(`[${requestId}] Error: ${err.message}`, err.stack);
+  const origin = c.req.header("origin") ?? "";
 
   if (err instanceof HTTPException) {
     return c.json(
@@ -18,7 +19,11 @@ export const errorHandler: ErrorHandler<AppEnv> = (err, c) => {
         status: err.status,
         message: err.message,
       },
-      err.status as ContentfulStatusCode
+      err.status as ContentfulStatusCode,
+      {
+        "Access-Control-Allow-Origin": origin,
+        "Access-Control-Allow-Credentials": "true",
+      }
     );
   }
 
@@ -27,6 +32,10 @@ export const errorHandler: ErrorHandler<AppEnv> = (err, c) => {
       status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
       message: "Internal Server Error",
     },
-    HTTP_STATUS.INTERNAL_SERVER_ERROR
+    HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    {
+      "Access-Control-Allow-Origin": origin,
+      "Access-Control-Allow-Credentials": "true",
+    }
   );
 };

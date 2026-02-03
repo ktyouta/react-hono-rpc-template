@@ -8,7 +8,7 @@ REFRESH_TOKEN_EXPIRES=7d
 PEPPER=your-pepper-secret-key
 
 # CORS許可オリジン
-CORS_ORIGIN=http://localhost:5173
+CORS_ORIGIN=http://127.0.0.1:5173
 
 # 機能制御
 ALLOW_USER_OPERATION=true
