@@ -9,13 +9,11 @@ import type { AppEnv } from "../../../type";
 import { ApiResponse, formatZodErrors } from "../../../util";
 
 
-const frontUserLogin = new Hono<AppEnv>();
-
 /**
  * ログイン
  * @route POST /api/v1/frontUserLogin
  */
-frontUserLogin.post(
+const frontUserLogin = new Hono<AppEnv>().post(
     API_ENDPOINT.FRONT_USER_LOGIN,
     zValidator("json", FrontUserLoginSchema, (result, c) => {
         if (!result.success) {

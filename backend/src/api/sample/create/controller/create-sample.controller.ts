@@ -9,13 +9,11 @@ import { CreateSampleSchema } from "../schema";
 import { CreateSampleService } from "../service";
 import { CreateSampleUseCase } from "../usecase";
 
-const createSample = new Hono<AppEnv>();
-
 /**
  * サンプル作成
  * @route POST /api/v1/sample
  */
-createSample.post(
+const createSample = new Hono<AppEnv>().post(
   API_ENDPOINT.SAMPLE,
   zValidator("json", CreateSampleSchema, (result, c) => {
     if (!result.success) {

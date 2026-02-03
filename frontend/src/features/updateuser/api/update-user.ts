@@ -1,38 +1,33 @@
-import { apiPaths } from '@/config/api-paths';
-import { MESSAGES } from '@/constants/messages';
-import { useMutationWrapper } from '@/hooks/use-mutation-wrapper';
-import { ApiErrorResponseSchema, createApiResponseSchema } from '@/lib/api-response';
-import { LoginUserSchema, LoginUserType } from '@/types/login-user-type';
+import { rpc } from '@/lib/rpc-client';
+import { useMutation } from '@tanstack/react-query';
+import type { InferResponseType, InferRequestType } from 'hono/client';
 
-const UpdateUserResponseSchema = createApiResponseSchema(LoginUserSchema);
+const endpoint = rpc.api.v1.frontuser[':userId'].$patch;
+
+type ResponseType = InferResponseType<typeof endpoint>;
+type RequestType = InferRequestType<typeof endpoint>;
 
 type PropsType = {
-    onSuccess: (data: LoginUserType) => void;
+    onSuccess: (data: ResponseType) => void;
     onError: (message: string) => void;
 };
 
 export function useUpdateUserMutation(props: PropsType) {
-
-    return useMutationWrapper({
-        url: apiPaths.updateUser,
-        method: "POST",
-        onSuccess: (res: unknown) => {
-            const result = UpdateUserResponseSchema.safeParse(res);
-            if (!result.success) {
-                console.error(MESSAGES.API_VALIDATION_ERROR, result.error);
-                props.onError(MESSAGES.GENERIC_ERROR);
-                return;
+    return useMutation({
+        mutationFn: async (data: { userId: string; json: RequestType['json'] }) => {
+            const res = await endpoint({
+                param: { userId: data.userId },
+                json: data.json,
+            });
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.message);
             }
-            props.onSuccess(result.data.data);
+            return res.json();
         },
-        onError: (res: unknown) => {
-            const result = ApiErrorResponseSchema.safeParse(res);
-            if (!result.success) {
-                console.error(MESSAGES.API_VALIDATION_ERROR, result.error);
-                props.onError(MESSAGES.GENERIC_ERROR);
-                return;
-            }
-            props.onError(result.data.message);
+        onSuccess: props.onSuccess,
+        onError: (error: Error) => {
+            props.onError(error.message);
         },
     });
 }

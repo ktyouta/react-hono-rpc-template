@@ -1,4 +1,4 @@
-import { Context, Hono } from "hono";
+import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
 import { RefreshToken } from "../../../domain";
@@ -7,14 +7,11 @@ import type { AppEnv } from "../../../type";
 import { ApiResponse } from "../../../util";
 import { RefreshUseCase } from "../usecase";
 
-
-const refresh = new Hono<AppEnv>();
-
 /**
  * トークンリフレッシュ
  * @route POST /api/v1/refresh
  */
-refresh.post(API_ENDPOINT.REFRESH, async (c: Context<AppEnv>) => {
+const refresh = new Hono<AppEnv>().post(API_ENDPOINT.REFRESH, async (c) => {
 
     try {
 

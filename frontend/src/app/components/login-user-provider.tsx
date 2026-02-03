@@ -1,11 +1,7 @@
-import { MESSAGES } from "@/constants/messages";
-import { createApiResponseSchema } from "@/lib/api-response";
-import { LoginUserSchema, LoginUserType } from "@/types/login-user-type";
+import { LoginUserType } from "@/types/login-user-type";
 import { createCtx } from "@/utils/create-ctx";
 import { ReactNode, useEffect, useState } from "react";
 import { veryfy } from "../api/veryfy";
-
-const VeryfiyResponseSchema = createApiResponseSchema(LoginUserSchema);
 
 // ログインユーザー情報
 export const LoginUserContext = createCtx<LoginUserType | null>();
@@ -25,26 +21,17 @@ export function LoginUserProvider(props: PropsType) {
 
     // 認証チェック
     const { data, isSuccess } = veryfy({
-        select: (res: unknown) => {
-
-            if (!res) {
-                return null;
-            }
-
-            const result = VeryfiyResponseSchema.safeParse(res);
-            if (!result.success) {
-                console.error(MESSAGES.API_VALIDATION_ERROR, result.error);
-                throw new Error(MESSAGES.GENERIC_ERROR);
-            }
-            return result.data.data;
-        }
+        select: (res) => res,
     });
 
     useEffect(() => {
         if (data && isSuccess && !loginUser) {
-            setLoginUser(data);
+            // バックエンドのレスポンス型からログインユーザー情報を取得
+            if (data.data) {
+                setLoginUser(data.data as LoginUserType);
+            }
         }
-    }, [data, isSuccess]);
+    }, [data, isSuccess, loginUser]);
 
     return (
         <LoginUserContext.Provider value={loginUser}>

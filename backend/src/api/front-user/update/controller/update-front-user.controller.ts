@@ -11,13 +11,11 @@ import { UpdateFrontUserSchema, UserIdParamSchema } from "../schema";
 import { UpdateFrontUserUseCase } from "../usecase";
 
 
-const updateFrontUser = new Hono<AppEnv>();
-
 /**
  * ユーザー更新
  * @route PATCH /api/v1/frontuser/:userId
  */
-updateFrontUser.patch(
+const updateFrontUser = new Hono<AppEnv>().patch(
     `${API_ENDPOINT.FRONT_USER_ID}`,
     userOperationGuardMiddleware,
     authMiddleware,

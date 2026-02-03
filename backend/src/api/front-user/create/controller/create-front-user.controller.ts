@@ -11,13 +11,11 @@ import { CreateFrontUserSchema } from "../schema";
 import { CreateFrontUserUseCase } from "../usecase";
 
 
-const createFrontUser = new Hono<AppEnv>();
-
 /**
  * ユーザー作成
  * @route POST /api/v1/frontuser
  */
-createFrontUser.post(
+const createFrontUser = new Hono<AppEnv>().post(
     API_ENDPOINT.FRONT_USER,
     userOperationGuardMiddleware,
     zValidator("json", CreateFrontUserSchema, (result, c) => {

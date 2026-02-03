@@ -11,13 +11,11 @@ import { UserIdParamSchema } from "../../update/schema";
 import { DeleteFrontUserUseCase } from "../usecase";
 
 
-const deleteFrontUser = new Hono<AppEnv>();
-
 /**
  * ユーザー削除
  * @route DELETE /api/v1/frontuser/:userId
  */
-deleteFrontUser.delete(
+const deleteFrontUser = new Hono<AppEnv>().delete(
     `${API_ENDPOINT.FRONT_USER_ID}`,
     userOperationGuardMiddleware,
     authMiddleware,

@@ -8,13 +8,11 @@ import { ApiResponse } from "../../../util";
 import { VerifyUseCase } from "../usecase/verify.usecase";
 
 
-const verify = new Hono<AppEnv>();
-
 /**
  * 認証チェック
  * @route GET /api/v1/verify
  */
-verify.get(
+const verify = new Hono<AppEnv>().get(
     API_ENDPOINT.VERIFY,
     async (c) => {
         try {

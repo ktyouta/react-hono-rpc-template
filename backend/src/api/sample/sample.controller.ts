@@ -6,13 +6,12 @@ import { createSample } from "./create/controller/create-sample.controller";
 import { updateSample } from "./update/controller/update-sample.controller";
 import { deleteSample } from "./delete/controller/delete-sample.controller";
 
-const sample = new Hono<AppEnv>();
-
-// ルーティング
-sample.route("/", getListSample);
-sample.route("/", getSampleById);
-sample.route("/", createSample);
-sample.route("/", updateSample);
-sample.route("/", deleteSample);
+// ルーティング（チェーンで型情報を保持）
+const sample = new Hono<AppEnv>()
+    .route("/", getListSample)
+    .route("/", getSampleById)
+    .route("/", createSample)
+    .route("/", updateSample)
+    .route("/", deleteSample);
 
 export { sample };

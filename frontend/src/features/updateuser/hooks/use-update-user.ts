@@ -1,4 +1,4 @@
-import { SetLoginUserContext } from '@/app/components/login-user-provider';
+import { LoginUserContext, SetLoginUserContext } from '@/app/components/login-user-provider';
 import { paths } from '@/config/paths';
 import { useAppNavigation } from '@/hooks/use-app-navigation';
 import { useCreateYearList } from '@/hooks/use-create-year-list';
@@ -6,9 +6,16 @@ import { LoginUserType } from '@/types/login-user-type';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useUpdateUserMutation } from '../api/update-user';
-import { UpdateUserRequestType } from '../types/update-user-request-type';
 import { useUpdateUserForm } from './use-update-user.form';
 
+/**
+ * 生年月日をyyyyMMdd形式に変換
+ */
+function formatBirthday(birthday: { year: string; month: string; day: string }): string {
+    const month = birthday.month.padStart(2, '0');
+    const day = birthday.day.padStart(2, '0');
+    return `${birthday.year}${month}${day}`;
+}
 
 export function useUpdateUser() {
 
@@ -16,6 +23,8 @@ export function useUpdateUser() {
     const navigate = useNavigate();
     // エラーメッセージ
     const [errMessage, setErrMessage] = useState(``);
+    // ログインユーザー情報
+    const loginUser = LoginUserContext.useCtx();
     // ログインユーザー情報(setter)
     const setLoginUserInfo = SetLoginUserContext.useCtx();
     // 年リスト
@@ -27,8 +36,10 @@ export function useUpdateUser() {
     // 登録リクエスト
     const postMutation = useUpdateUserMutation({
         // 正常終了後の処理
-        onSuccess: (res: unknown) => {
-            setLoginUserInfo(res as LoginUserType);
+        onSuccess: (res) => {
+            if (res.data) {
+                setLoginUserInfo(res.data as LoginUserType);
+            }
             navigate(paths.home.path);
         },
         // 失敗後の処理
@@ -40,21 +51,23 @@ export function useUpdateUser() {
     });
 
     /**
-     * ユーザー登録実行
+     * ユーザー更新実行
      */
     const handleConfirm = handleSubmit((data) => {
 
-        const body: UpdateUserRequestType = {
-            userName: data.userName,
-            birthday: {
-                year: data.birthday.year,
-                month: data.birthday.month,
-                day: data.birthday.day,
-            },
-        };
+        if (!loginUser?.userId) {
+            setErrMessage('ユーザー情報が取得できません');
+            return;
+        }
 
         // 登録リクエスト呼び出し
-        postMutation.mutate(body);
+        postMutation.mutate({
+            userId: String(loginUser.userId),
+            json: {
+                userName: data.userName,
+                userBirthday: formatBirthday(data.birthday),
+            },
+        });
     });
 
     /**

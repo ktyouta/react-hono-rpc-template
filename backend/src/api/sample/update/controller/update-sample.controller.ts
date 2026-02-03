@@ -9,13 +9,11 @@ import { UpdateSampleParamSchema, UpdateSampleSchema } from "../schema";
 import { UpdateSampleService } from "../service";
 import { UpdateSampleUseCase } from "../usecase";
 
-const updateSample = new Hono<AppEnv>();
-
 /**
  * サンプル更新
  * @route PUT /api/v1/sample/:id
  */
-updateSample.put(
+const updateSample = new Hono<AppEnv>().put(
   `${API_ENDPOINT.SAMPLE}/:id`,
   zValidator("param", UpdateSampleParamSchema, (result, c) => {
     if (!result.success) {

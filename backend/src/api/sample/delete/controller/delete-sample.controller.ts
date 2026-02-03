@@ -9,13 +9,11 @@ import { DeleteSampleParamSchema } from "../schema";
 import { DeleteSampleService } from "../service";
 import { DeleteSampleUseCase } from "../usecase";
 
-const deleteSample = new Hono<AppEnv>();
-
 /**
  * サンプル削除
  * @route DELETE /api/v1/sample/:id
  */
-deleteSample.delete(
+const deleteSample = new Hono<AppEnv>().delete(
   `${API_ENDPOINT.SAMPLE}/:id`,
   zValidator("param", DeleteSampleParamSchema, (result, c) => {
     if (!result.success) {

@@ -1,17 +1,20 @@
-import { apiPaths } from "@/config/api-paths";
-import { api } from "@/lib/api-client";
-import { LoginUserType } from "@/types/login-user-type";
+import { rpc } from "@/lib/rpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { veryfyKeys } from "./query-key";
+import type { InferResponseType } from 'hono/client';
+
+const endpoint = rpc.api.v1.verify.$get;
+
+type ResponseType = InferResponseType<typeof endpoint>;
 
 type PropsType = {
-    select: (res: unknown) => LoginUserType | null,
+    select: (res: ResponseType | null) => ResponseType | null,
 }
 
 /**
  * 認証チェック
- * @param props 
- * @returns 
+ * @param props
+ * @returns
  */
 export function veryfy(props: PropsType) {
 
@@ -19,9 +22,12 @@ export function veryfy(props: PropsType) {
         queryKey: veryfyKeys.all,
         queryFn: async () => {
             try {
-                const { data } = await api.get(apiPaths.verify);
-                return data;
-            } catch (error) {
+                const res = await endpoint();
+                if (!res.ok) {
+                    return null;
+                }
+                return res.json();
+            } catch {
                 return null;
             }
         },

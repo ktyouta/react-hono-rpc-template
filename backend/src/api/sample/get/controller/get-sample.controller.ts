@@ -9,13 +9,11 @@ import { GetSampleParamSchema } from "../schema";
 import { GetSampleService } from "../service";
 import { GetSampleUseCase } from "../usecase";
 
-const getSampleById = new Hono<AppEnv>();
-
 /**
  * サンプル取得
  * @route GET /api/v1/sample/:id
  */
-getSampleById.get(
+const getSampleById = new Hono<AppEnv>().get(
   `${API_ENDPOINT.SAMPLE}/:id`,
   zValidator("param", GetSampleParamSchema, (result, c) => {
     if (!result.success) {

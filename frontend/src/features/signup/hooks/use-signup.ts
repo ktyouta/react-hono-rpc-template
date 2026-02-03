@@ -5,9 +5,16 @@ import { LoginUserType } from '@/types/login-user-type';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useSignupMutation } from '../api/signup';
-import { SignupRequestType } from '../types/signup-request-type';
 import { useSignupForm } from './use-signup.form';
 
+/**
+ * 生年月日をyyyyMMdd形式に変換
+ */
+function formatBirthday(birthday: { year: string; month: string; day: string }): string {
+    const month = birthday.month.padStart(2, '0');
+    const day = birthday.day.padStart(2, '0');
+    return `${birthday.year}${month}${day}`;
+}
 
 export function useSignup() {
 
@@ -24,8 +31,10 @@ export function useSignup() {
     // 登録リクエスト
     const postMutation = useSignupMutation({
         // 正常終了後の処理
-        onSuccess: (res: unknown) => {
-            setLoginUserInfo(res as LoginUserType);
+        onSuccess: (res) => {
+            if (res.data) {
+                setLoginUserInfo(res.data as LoginUserType);
+            }
             navigate(paths.home.path);
         },
         // 失敗後の処理
@@ -46,23 +55,13 @@ export function useSignup() {
      */
     const handleConfirm = handleSubmit((data) => {
 
-        const userName = data.userName;
-        const password = data.password
-        const confirmPassword = data.confirmPassword;
-
-        const body: SignupRequestType = {
-            userName,
-            password,
-            birthday: {
-                year: data.birthday.year,
-                month: data.birthday.month,
-                day: data.birthday.day,
-            },
-            confirmPassword
-        };
-
         // 登録リクエスト呼び出し
-        postMutation.mutate(body);
+        postMutation.mutate({
+            userName: data.userName,
+            userBirthday: formatBirthday(data.birthday),
+            password: data.password,
+            confirmPassword: data.confirmPassword,
+        });
     });
 
     /**
