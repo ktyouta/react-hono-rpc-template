@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
-import { RefreshToken } from "../../../domain";
+import { Cookie, RefreshToken } from "../../../domain";
 import type { AppEnv } from "../../../type";
 import { ApiResponse } from "../../../util";
 import { VerifyUseCase } from "../usecase/verify.usecase";
@@ -18,7 +18,8 @@ const verify = new Hono<AppEnv>().get(
 
             const db = c.get('db');
             const useCase = new VerifyUseCase(db);
-            const refreshToken = RefreshToken.get(getCookie(c, RefreshToken.COOKIE_KEY));
+            const cookie = new Cookie(getCookie(c));
+            const refreshToken = RefreshToken.get(cookie);
 
             const result = await useCase.execute(refreshToken);
 

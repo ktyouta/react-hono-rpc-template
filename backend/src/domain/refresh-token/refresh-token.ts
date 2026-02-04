@@ -1,6 +1,7 @@
 import { sign, verify } from "hono/jwt";
 import { envConfig } from "../../config";
 import { parseDuration } from "../../util";
+import { Cookie } from "../cookie";
 import { FrontUserId } from "../front-user-id";
 
 
@@ -52,16 +53,18 @@ export class RefreshToken {
 
     /**
      * トークンを取得
-     * @param cookieValue
+     * @param cookie
      * @returns
      */
-    static get(cookieValue: string | undefined) {
+    static get(cookie: Cookie) {
 
-        if (!cookieValue) {
+        const token = cookie.get(RefreshToken.COOKIE_KEY);
+
+        if (!token) {
             throw Error(`トークンが存在しません。`);
         }
 
-        return new RefreshToken(cookieValue);
+        return new RefreshToken(token);
     }
 
     /**

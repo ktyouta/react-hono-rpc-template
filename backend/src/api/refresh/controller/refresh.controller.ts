@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
-import { RefreshToken } from "../../../domain";
+import { Cookie, RefreshToken } from "../../../domain";
 import type { AppEnv } from "../../../type";
 import { ApiResponse } from "../../../util";
 import { RefreshUseCase } from "../usecase";
@@ -16,10 +16,10 @@ const refresh = new Hono<AppEnv>().post(API_ENDPOINT.REFRESH, async (c) => {
 
         const db = c.get('db');
         const useCase = new RefreshUseCase(db);
-        const refreshTokenValue = getCookie(c, RefreshToken.COOKIE_KEY);
-        const origin = c.req.header("Origin");
+        const cookie = new Cookie(getCookie(c));
+        const refreshToken = RefreshToken.get(cookie);
 
-        const result = await useCase.execute(refreshTokenValue, origin);
+        const result = await useCase.execute(refreshToken);
 
         if (!result.success) {
             console.warn(`Refresh failed: ${result.message}`);

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { FrontUserId } from "../../src/domain";
+import { Cookie, FrontUserId } from "../../src/domain";
 
 // envConfigをモック
 vi.mock("../../src/config", () => ({
@@ -37,18 +37,14 @@ describe("RefreshToken", () => {
       const userId = FrontUserId.of(1);
       const createdToken = await RefreshToken.create(userId);
 
-      const extractedToken = RefreshToken.get(createdToken.value);
+      const cookie = new Cookie({ [RefreshToken.COOKIE_KEY]: createdToken.value });
+      const extractedToken = RefreshToken.get(cookie);
       expect(extractedToken.value).toBe(createdToken.value);
     });
 
-    it("Cookie未設定の場合にエラーになること", () => {
-      expect(() => RefreshToken.get(undefined)).toThrow(
-        "トークンが存在しません。"
-      );
-    });
-
-    it("空文字の場合にエラーになること", () => {
-      expect(() => RefreshToken.get("")).toThrow(
+    it("Cookieにトークンが存在しない場合にエラーになること", () => {
+      const cookie = new Cookie({});
+      expect(() => RefreshToken.get(cookie)).toThrow(
         "トークンが存在しません。"
       );
     });

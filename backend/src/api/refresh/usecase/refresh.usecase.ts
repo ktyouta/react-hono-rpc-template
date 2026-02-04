@@ -1,5 +1,4 @@
 import type { ContentfulStatusCode } from "hono/utils/http-status";
-import { envConfig } from "../../../config";
 import { HTTP_STATUS } from "../../../constant";
 import { AccessToken, RefreshToken } from "../../../domain";
 import type { Database } from "../../../infrastructure/db";
@@ -35,31 +34,7 @@ export class RefreshUseCase {
         this.service = new RefreshService(repository);
     }
 
-    async execute(
-        refreshTokenValue: string | undefined,
-        origin: string | undefined,
-    ): Promise<Output> {
-
-        // Origin チェック
-        if (!origin || !envConfig.corsOrigin.includes(origin)) {
-            return {
-                success: false,
-                status: HTTP_STATUS.UNAUTHORIZED,
-                message: "許可されていないOrigin",
-            };
-        }
-
-        // リフレッシュトークン取得
-        let refreshToken: RefreshToken;
-        try {
-            refreshToken = RefreshToken.get(refreshTokenValue);
-        } catch {
-            return {
-                success: false,
-                status: HTTP_STATUS.UNAUTHORIZED,
-                message: "リフレッシュトークンが見つかりません",
-            };
-        }
+    async execute(refreshToken: RefreshToken): Promise<Output> {
 
         // トークン検証・ユーザーID取得
         let userId;
