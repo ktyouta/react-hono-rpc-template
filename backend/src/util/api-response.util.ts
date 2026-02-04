@@ -19,7 +19,6 @@ export class ApiResponse {
     message: string,
     data?: T
   ) {
-    const origin = c.req.header('origin') ?? '';
     const responseBody: ApiResponseType<T> = {
       status,
       message,
@@ -31,11 +30,6 @@ export class ApiResponse {
 
     return c.json(
       responseBody,
-      status,
-      {
-        'Access-Control-Allow-Origin': origin,
-        'Access-Control-Allow-Credentials': 'true',
-      }
     );
   }
 }

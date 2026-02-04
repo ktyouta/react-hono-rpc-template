@@ -3,7 +3,6 @@ import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../../constant";
 import { RefreshToken } from "../../../../domain";
-import { createDbClient } from "../../../../infrastructure/db";
 import { userOperationGuardMiddleware } from "../../../../middleware";
 import type { AppEnv } from "../../../../type";
 import { ApiResponse, formatZodErrors } from "../../../../util";
@@ -26,7 +25,7 @@ const createFrontUser = new Hono<AppEnv>().post(
     async (c) => {
 
         const body = c.req.valid("json");
-        const db = createDbClient(c.env.DB);
+        const db = c.get('db');
         const useCase = new CreateFrontUserUseCase(db);
 
         const result = await useCase.execute(body);

@@ -4,6 +4,7 @@ import { frontUser, frontUserLogin, health, refresh, sample, verify } from "./ap
 import { envConfig } from "./config";
 import {
   accessLogMiddleware,
+  createDbClientMiddleware,
   envInitMiddleware,
   errorHandler,
   notFoundHandler,
@@ -18,7 +19,9 @@ app.use("*", envInitMiddleware);
 app.use(
   '*',
   cors({
-    origin: envConfig.corsOrigin,
+    origin: (origin) => {
+      return envConfig.corsOrigin.includes(origin) ? origin : '';
+    },
     credentials: true,
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowHeaders: [
@@ -27,12 +30,12 @@ app.use(
       'Content-Type',
       'Accept',
       'Authorization',
-      'X-CSRF-Token',
     ],
   })
 );
 app.use("*", requestIdMiddleware);
 app.use("*", accessLogMiddleware);
+app.use("*", createDbClientMiddleware);
 
 // エラーハンドラー
 app.onError(errorHandler);

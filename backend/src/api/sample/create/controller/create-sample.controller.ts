@@ -1,7 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../../constant";
-import { createDbClient } from "../../../../infrastructure/db";
 import type { AppEnv } from "../../../../type";
 import { ApiResponse, formatZodErrors } from "../../../../util";
 import { CreateSampleRepository } from "../repository";
@@ -22,7 +21,7 @@ const createSample = new Hono<AppEnv>().post(
   }),
   async (c) => {
     const body = c.req.valid("json");
-    const db = createDbClient(c.env.DB);
+    const db = c.get('db');
     const repository = new CreateSampleRepository(db);
     const service = new CreateSampleService(repository);
     const useCase = new CreateSampleUseCase(service);

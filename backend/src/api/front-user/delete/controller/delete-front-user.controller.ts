@@ -3,7 +3,6 @@ import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../../constant";
 import { FrontUserId, RefreshToken } from "../../../../domain";
-import { createDbClient } from "../../../../infrastructure/db";
 import { authMiddleware, userOperationGuardMiddleware } from "../../../../middleware";
 import type { AppEnv } from "../../../../type";
 import { ApiResponse, formatZodErrors } from "../../../../util";
@@ -27,7 +26,7 @@ const deleteFrontUser = new Hono<AppEnv>().delete(
     async (c) => {
 
         const { userId } = c.req.valid("param");
-        const db = createDbClient(c.env.DB);
+        const db = c.get('db');
         const useCase = new DeleteFrontUserUseCase(db);
 
         const result = await useCase.execute(FrontUserId.of(Number(userId)));

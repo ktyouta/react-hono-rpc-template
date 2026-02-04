@@ -38,7 +38,6 @@ export class RefreshUseCase {
     async execute(
         refreshTokenValue: string | undefined,
         origin: string | undefined,
-        csrfToken: string | undefined
     ): Promise<Output> {
 
         // Origin チェック
@@ -47,15 +46,6 @@ export class RefreshUseCase {
                 success: false,
                 status: HTTP_STATUS.UNAUTHORIZED,
                 message: "許可されていないOrigin",
-            };
-        }
-
-        // CSRFトークンチェック
-        if (csrfToken !== "web") {
-            return {
-                success: false,
-                status: HTTP_STATUS.UNAUTHORIZED,
-                message: "カスタムヘッダが不正",
             };
         }
 

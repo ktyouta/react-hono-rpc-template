@@ -3,7 +3,6 @@ import { AuthRepository, AuthService } from "../auth";
 import { HTTP_STATUS } from "../constant";
 import { AccessToken } from "../domain";
 import { Header } from "../domain/header";
-import { createDbClient } from "../infrastructure/db";
 import type { AppEnv } from "../type";
 import { ApiResponse } from "../util";
 
@@ -20,7 +19,7 @@ export const authMiddleware: MiddlewareHandler<AppEnv> = async (c, next) => {
 
         const userId = await accessToken.getPayload();
 
-        const db = createDbClient(c.env.DB);
+        const db = c.get('db');
         const repository = new AuthRepository(db);
         const service = new AuthService(repository);
 

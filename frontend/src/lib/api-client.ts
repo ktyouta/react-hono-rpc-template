@@ -73,11 +73,6 @@ api.interceptors.response.use(
             const res = await refreshApi.post(
               apiPaths.refresh,
               {},
-              {
-                headers: {
-                  'X-CSRF-Token': 'web',
-                },
-              }
             );
 
             const newAccessToken = res.data.data;

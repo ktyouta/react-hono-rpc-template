@@ -1,7 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../../constant";
-import { createDbClient } from "../../../../infrastructure/db";
 import type { AppEnv } from "../../../../type";
 import { ApiResponse, formatZodErrors } from "../../../../util";
 import { DeleteSampleRepository } from "../repository";
@@ -22,7 +21,7 @@ const deleteSample = new Hono<AppEnv>().delete(
   }),
   async (c) => {
     const { id } = c.req.valid("param");
-    const db = createDbClient(c.env.DB);
+    const db = c.get('db');
     const repository = new DeleteSampleRepository(db);
     const service = new DeleteSampleService(repository);
     const useCase = new DeleteSampleUseCase(service);

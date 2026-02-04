@@ -1,3 +1,4 @@
+import type { Database } from "../infrastructure/db";
 import type { FrontUserId } from "../domain";
 
 /**
@@ -30,5 +31,6 @@ export type AppEnv = {
   Variables: {
     requestId: string;
     user?: AuthUserType;
+    db: Database;
   };
 };

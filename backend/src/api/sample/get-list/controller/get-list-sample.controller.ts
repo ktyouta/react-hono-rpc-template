@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 import { API_ENDPOINT } from "../../../../constant";
-import { createDbClient } from "../../../../infrastructure/db";
 import type { AppEnv } from "../../../../type";
 import { ApiResponse } from "../../../../util";
 import { GetListSampleRepository } from "../repository";
@@ -12,7 +11,7 @@ import { GetListSampleUseCase } from "../usecase";
  * @route GET /api/v1/sample
  */
 const getListSample = new Hono<AppEnv>().get(API_ENDPOINT.SAMPLE, async (c) => {
-  const db = createDbClient(c.env.DB);
+  const db = c.get('db');
   const repository = new GetListSampleRepository(db);
   const service = new GetListSampleService(repository);
   const useCase = new GetListSampleUseCase(service);

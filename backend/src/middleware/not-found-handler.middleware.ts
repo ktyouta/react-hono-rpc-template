@@ -6,7 +6,6 @@ import type { AppEnv } from "../type";
  * 404ハンドラー
  */
 export const notFoundHandler: NotFoundHandler<AppEnv> = (c) => {
-  const origin = c.req.header('origin') ?? '';
 
   return c.json(
     {
@@ -14,9 +13,5 @@ export const notFoundHandler: NotFoundHandler<AppEnv> = (c) => {
       message: "Not Found",
     },
     HTTP_STATUS.NOT_FOUND,
-    {
-      'Access-Control-Allow-Origin': origin,
-      'Access-Control-Allow-Credentials': 'true',
-    }
   );
 };

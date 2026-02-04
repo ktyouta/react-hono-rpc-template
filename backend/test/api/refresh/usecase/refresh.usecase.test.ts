@@ -53,7 +53,6 @@ describe("RefreshUseCase", () => {
 
     const validRefreshToken = "valid-refresh-token";
     const validOrigin = "http://localhost:3000";
-    const validCsrfToken = "web";
 
     const mockUserInfo = {
         userId: 1,
@@ -79,7 +78,7 @@ describe("RefreshUseCase", () => {
             mockService.getUser = vi.fn().mockResolvedValue(mockUserInfo);
 
             // Act
-            const result = await useCase.execute(validRefreshToken, validOrigin, validCsrfToken);
+            const result = await useCase.execute(validRefreshToken, validOrigin);
 
             // Assert
             expect(result.success).toBe(true);
@@ -93,7 +92,7 @@ describe("RefreshUseCase", () => {
 
         it("異常系: Originが不正な場合はエラーを返す", async () => {
             // Act
-            const result = await useCase.execute(validRefreshToken, "http://invalid-origin.com", validCsrfToken);
+            const result = await useCase.execute(validRefreshToken, "http://invalid-origin.com");
 
             // Assert
             expect(result.success).toBe(false);
@@ -103,22 +102,12 @@ describe("RefreshUseCase", () => {
 
         it("異常系: Originがない場合はエラーを返す", async () => {
             // Act
-            const result = await useCase.execute(validRefreshToken, undefined, validCsrfToken);
+            const result = await useCase.execute(validRefreshToken, undefined);
 
             // Assert
             expect(result.success).toBe(false);
             expect(result.status).toBe(HTTP_STATUS.UNAUTHORIZED);
             expect(result.message).toBe("許可されていないOrigin");
-        });
-
-        it("異常系: CSRFトークンが不正な場合はエラーを返す", async () => {
-            // Act
-            const result = await useCase.execute(validRefreshToken, validOrigin, "invalid-csrf");
-
-            // Assert
-            expect(result.success).toBe(false);
-            expect(result.status).toBe(HTTP_STATUS.UNAUTHORIZED);
-            expect(result.message).toBe("カスタムヘッダが不正");
         });
 
         it("異常系: ユーザーが見つからない場合はエラーを返す", async () => {
@@ -127,7 +116,7 @@ describe("RefreshUseCase", () => {
             mockService.getUser = vi.fn().mockResolvedValue(null);
 
             // Act
-            const result = await useCase.execute(validRefreshToken, validOrigin, validCsrfToken);
+            const result = await useCase.execute(validRefreshToken, validOrigin);
 
             // Assert
             expect(result.success).toBe(false);
@@ -142,7 +131,7 @@ describe("RefreshUseCase", () => {
             mockRefreshTokenInstance.isAbsoluteExpired.mockResolvedValue(true);
 
             // Act
-            const result = await useCase.execute(validRefreshToken, validOrigin, validCsrfToken);
+            const result = await useCase.execute(validRefreshToken, validOrigin);
 
             // Assert
             expect(result.success).toBe(false);
