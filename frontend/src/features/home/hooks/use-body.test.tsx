@@ -1,19 +1,31 @@
 import { act, renderHook } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect } from "vitest";
 import { useBody } from "./use-body";
+
+function createWrapper() {
+    const queryClient = new QueryClient({
+        defaultOptions: { queries: { retry: false } },
+    });
+    return ({ children }: { children: React.ReactNode }) => (
+        <QueryClientProvider client={queryClient}>
+            {children}
+        </QueryClientProvider>
+    );
+}
 
 describe("useBody", () => {
 
     test("should initialize count to 0", () => {
 
-        const { result } = renderHook(() => useBody());
+        const { result } = renderHook(() => useBody(), { wrapper: createWrapper() });
 
         expect(result.current.count).toBe(0);
     });
 
     test("should increment count by 1 when click is called", () => {
 
-        const { result } = renderHook(() => useBody());
+        const { result } = renderHook(() => useBody(), { wrapper: createWrapper() });
 
         act(() => {
             result.current.click();
@@ -24,7 +36,7 @@ describe("useBody", () => {
 
     test("should increment count by the number of times click is called", () => {
 
-        const { result } = renderHook(() => useBody());
+        const { result } = renderHook(() => useBody(), { wrapper: createWrapper() });
 
         act(() => {
             result.current.click();
