@@ -75,12 +75,12 @@ React + Hono + RPC を用いたフロントエンド・バックエンド統合�
 
 ## RPC 設計指針（重要）
 
-* フロントエンドは URL や HTTP メソッドを意識しない
-* REST API のような URL 設計を前提としない
+* バックエンドは REST API の URL 設計を前提とする
+* フロントエンドは URL や HTTP メソッドを意識しない（RPC クライアント経由で呼び出す）
 * RPC の型定義は **バックエンドを単一の source of truth** とする
 * フロントエンドで API 用の型を新規定義しない
 * Hono の app / router 定義から RPC クライアントを生成する
-* fetch / axios を直接使用しない
+* fetch / axios を直接使用しない（ファイルアップロード等の例外を除く）
 
 ---
 
