@@ -1,25 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { CreateFrontUserUseCase } from "../../../../../src/api/front-user/create/usecase/create-front-user.usecase";
-import { HTTP_STATUS } from "../../../../../src/constant";
-import { FrontUserId } from "../../../../../src/domain";
-import type { Database } from "../../../../../src/infrastructure/db";
+import { CreateFrontUserUseCase } from "../../../../src/api/front-user/usecase/create-front-user.usecase";
+import { HTTP_STATUS } from "../../../../src/constant";
+import { FrontUserId } from "../../../../src/domain";
+import type { Database } from "../../../../src/infrastructure/db";
 
 
 // モック
-vi.mock("../../../../../src/api/front-user/create/repository", () => ({
-    CreateFrontUserRepository: vi.fn(),
-}));
-
-vi.mock("../../../../../src/api/front-user/create/service", () => ({
-    CreateFrontUserService: vi.fn().mockImplementation(() => ({
-        checkUserNameExists: vi.fn(),
-        createUserId: vi.fn(),
-        insertFrontLoginUser: vi.fn(),
+vi.mock("../../../../src/api/front-user/repository", () => ({
+    CreateFrontUserRepository: vi.fn().mockImplementation(() => ({
+        findByUserName: vi.fn(),
         insertFrontUser: vi.fn(),
+        insertFrontLoginUser: vi.fn(),
     })),
 }));
 
-vi.mock("../../../../../src/config", () => ({
+vi.mock("../../../../src/config", () => ({
     envConfig: {
         pepper: "test-pepper",
         accessTokenJwtKey: "test-access-key",
@@ -29,27 +24,34 @@ vi.mock("../../../../../src/config", () => ({
     },
 }));
 
-vi.mock("../../../../../src/domain/access-token/access-token", () => ({
+vi.mock("../../../../src/domain/access-token/access-token", () => ({
     AccessToken: {
         create: vi.fn().mockResolvedValue({ token: "mock-access-token" }),
     },
 }));
 
-vi.mock("../../../../../src/domain/refresh-token/refresh-token", () => ({
+vi.mock("../../../../src/domain/refresh-token/refresh-token", () => ({
     RefreshToken: {
         create: vi.fn().mockResolvedValue({ value: "mock-refresh-token" }),
     },
 }));
 
-vi.mock("../../../../../src/domain/front-user-password/front-user-password", () => ({
+vi.mock("../../../../src/domain/front-user-password/front-user-password", () => ({
     FrontUserPassword: {
         hash: vi.fn().mockResolvedValue({ value: "hashed-password" }),
     },
 }));
 
-vi.mock("../../../../../src/domain/front-user-salt/front-user-salt", () => ({
+vi.mock("../../../../src/domain/front-user-salt/front-user-salt", () => ({
     FrontUserSalt: {
         generate: vi.fn().mockReturnValue({ value: "generated-salt" }),
+    },
+}));
+
+vi.mock("../../../../src/domain/seq/seq", () => ({
+    SeqKey: vi.fn().mockImplementation((key: string) => ({ key })),
+    SeqIssue: {
+        get: vi.fn().mockResolvedValue(1),
     },
 }));
 
@@ -76,11 +78,14 @@ describe("CreateFrontUserUseCase", () => {
 
         it("正常系: ユーザー作成に成功する", async () => {
             // Arrange
-            const mockService = (useCase as any).service;
-            mockService.checkUserNameExists = vi.fn().mockResolvedValue(false);
-            mockService.createUserId = vi.fn().mockResolvedValue(FrontUserId.of(1));
-            mockService.insertFrontLoginUser = vi.fn().mockResolvedValue(undefined);
-            mockService.insertFrontUser = vi.fn().mockResolvedValue(undefined);
+            const mockRepository = (useCase as any).repository;
+            mockRepository.findByUserName = vi.fn().mockResolvedValue([]);
+            mockRepository.insertFrontLoginUser = vi.fn().mockResolvedValue(undefined);
+            mockRepository.insertFrontUser = vi.fn().mockResolvedValue({
+                userId: 1,
+                userName: "testuser",
+                userBirthday: "19900101",
+            });
 
             // Act
             const result = await useCase.execute(validRequestBody);
@@ -97,8 +102,8 @@ describe("CreateFrontUserUseCase", () => {
 
         it("異常系: ユーザー名が重複している場合はエラーを返す", async () => {
             // Arrange
-            const mockService = (useCase as any).service;
-            mockService.checkUserNameExists = vi.fn().mockResolvedValue(true);
+            const mockRepository = (useCase as any).repository;
+            mockRepository.findByUserName = vi.fn().mockResolvedValue([{ userId: 1 }]);
 
             // Act
             const result = await useCase.execute(validRequestBody);

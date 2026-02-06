@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { FrontUserEntity } from "../../../../src/api/front-user/create/entity";
-import { CreateFrontUserResponseDto } from "../../../../src/api/front-user/create/dto";
+import { FrontUserEntity } from "../../../../src/api/front-user/entity";
+import { CreateFrontUserResponseDto } from "../../../../src/api/front-user/dto";
 import {
   FrontUserId,
   FrontUserName,

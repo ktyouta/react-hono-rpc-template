@@ -1,5 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { FrontUserPassword, FrontUserSalt, Pepper } from "../../src/domain";
+
+vi.mock("drizzle-orm", () => ({
+  eq: vi.fn(),
+}));
 
 describe("FrontUserPassword", () => {
   const testPepper = new Pepper("test-pepper-secret");

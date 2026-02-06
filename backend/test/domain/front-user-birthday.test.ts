@@ -1,5 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { FrontUserBirthday } from "../../src/domain";
+
+vi.mock("drizzle-orm", () => ({
+  eq: vi.fn(),
+}));
 
 describe("FrontUserBirthday", () => {
   it("正常な日付でインスタンスを生成できること", () => {

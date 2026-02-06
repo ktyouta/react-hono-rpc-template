@@ -1,6 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { Cookie, FrontUserId } from "../../src/domain";
 
+vi.mock("drizzle-orm", () => ({
+  eq: vi.fn(),
+}));
+
 // envConfigをモック
 vi.mock("../../src/config", () => ({
     envConfig: {

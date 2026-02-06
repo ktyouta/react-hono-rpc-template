@@ -1,5 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { FrontUserId } from "../../src/domain";
+
+vi.mock("drizzle-orm", () => ({
+  eq: vi.fn(),
+}));
 
 describe("FrontUserId", () => {
   it("正常なIDでインスタンスを生成できること", () => {

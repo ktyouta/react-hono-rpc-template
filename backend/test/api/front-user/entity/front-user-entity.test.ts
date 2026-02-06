@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   FrontUserEntity,
   FrontUserLoginEntity,
-} from "../../../../src/api/front-user/create/entity";
+} from "../../../../src/api/front-user/entity";
 import {
   FrontUserId,
   FrontUserName,

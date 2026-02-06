@@ -1,5 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { SeqKey } from "../../src/domain";
+
+vi.mock("drizzle-orm", () => ({
+  eq: vi.fn(),
+}));
 
 describe("SeqKey", () => {
   it("正常なキーでインスタンスを生成できること", () => {

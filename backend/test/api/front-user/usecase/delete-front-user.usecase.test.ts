@@ -1,17 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { DeleteFrontUserUseCase } from "../../../../../src/api/front-user/delete/usecase/delete-front-user.usecase";
-import { HTTP_STATUS } from "../../../../../src/constant";
-import { FrontUserId } from "../../../../../src/domain";
-import type { Database } from "../../../../../src/infrastructure/db";
+import { DeleteFrontUserUseCase } from "../../../../src/api/front-user/usecase/delete-front-user.usecase";
+import { HTTP_STATUS } from "../../../../src/constant";
+import { FrontUserId } from "../../../../src/domain";
+import type { Database } from "../../../../src/infrastructure/db";
 
 
 // モック
-vi.mock("../../../../../src/api/front-user/delete/repository", () => ({
-    DeleteFrontUserRepository: vi.fn(),
-}));
-
-vi.mock("../../../../../src/api/front-user/delete/service", () => ({
-    DeleteFrontUserService: vi.fn().mockImplementation(() => ({
+vi.mock("../../../../src/api/front-user/repository", () => ({
+    DeleteFrontUserRepository: vi.fn().mockImplementation(() => ({
         deleteFrontLoginUser: vi.fn(),
         deleteFrontUser: vi.fn(),
     })),
@@ -35,9 +31,9 @@ describe("DeleteFrontUserUseCase", () => {
 
         it("正常系: ユーザー削除に成功する", async () => {
             // Arrange
-            const mockService = (useCase as any).service;
-            mockService.deleteFrontLoginUser = vi.fn().mockResolvedValue(undefined);
-            mockService.deleteFrontUser = vi.fn().mockResolvedValue(true);
+            const mockRepository = (useCase as any).repository;
+            mockRepository.deleteFrontLoginUser = vi.fn().mockResolvedValue(undefined);
+            mockRepository.deleteFrontUser = vi.fn().mockResolvedValue(true);
 
             // Act
             const result = await useCase.execute(validUserId);
@@ -49,9 +45,9 @@ describe("DeleteFrontUserUseCase", () => {
 
         it("異常系: ユーザーが見つからない場合はエラーを返す", async () => {
             // Arrange
-            const mockService = (useCase as any).service;
-            mockService.deleteFrontLoginUser = vi.fn().mockResolvedValue(undefined);
-            mockService.deleteFrontUser = vi.fn().mockResolvedValue(false);
+            const mockRepository = (useCase as any).repository;
+            mockRepository.deleteFrontLoginUser = vi.fn().mockResolvedValue(undefined);
+            mockRepository.deleteFrontUser = vi.fn().mockResolvedValue(false);
 
             // Act
             const result = await useCase.execute(validUserId);

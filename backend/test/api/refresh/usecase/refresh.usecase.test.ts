@@ -4,6 +4,9 @@ import { HTTP_STATUS } from "../../../../src/constant";
 import { FrontUserId } from "../../../../src/domain";
 import type { Database } from "../../../../src/infrastructure/db";
 
+vi.mock("drizzle-orm", () => ({
+  eq: vi.fn(),
+}));
 
 // vi.hoisted()を使用してモック用の変数をホイスト
 const mockRefreshTokenInstance = vi.hoisted(() => ({
