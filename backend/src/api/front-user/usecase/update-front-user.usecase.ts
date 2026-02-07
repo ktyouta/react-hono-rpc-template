@@ -30,10 +30,8 @@ type Output =
  * ユーザー更新ユースケース
  */
 export class UpdateFrontUserUseCase {
-    private readonly repository: UpdateFrontUserRepository;
 
     constructor(private readonly db: Database) {
-        this.repository = new UpdateFrontUserRepository(db);
     }
 
     async execute(

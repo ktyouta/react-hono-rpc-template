@@ -4,11 +4,11 @@ import type { InferRequestType, InferResponseType } from 'hono/client';
 
 const endpoint = rpc.api.v1['frontuser-password'][':userId'].$patch;
 
-type ResponseType = InferResponseType<typeof endpoint>;
+type SuccessResponseType = InferResponseType<typeof endpoint, 200>;
 type RequestType = InferRequestType<typeof endpoint>;
 
 type PropsType = {
-    onSuccess: (data: ResponseType) => void;
+    onSuccess: (data: SuccessResponseType) => void;
     onError: (message: string) => void;
 };
 

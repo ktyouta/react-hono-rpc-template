@@ -35,16 +35,23 @@ class EnvConfigSingleton {
     private _isProduction: boolean = false;
 
     /**
-     * 環境変数を初期化
+     * 環境変数を初期化（必須項目が未設定の場合はエラー）
      */
     init(env: Partial<EnvConfig>) {
-        this._accessTokenJwtKey = env.ACCESS_TOKEN_JWT_KEY || ``;
-        this._accessTokenExpires = env.ACCESS_TOKEN_EXPIRES || ``;
-        this._refreshTokenJwtKey = env.REFRESH_TOKEN_JWT_KEY || ``;
-        this._refreshTokenExpires = env.REFRESH_TOKEN_EXPIRES || ``;
-        this._pepper = env.PEPPER || ``;
+        this._accessTokenJwtKey = this.requireEnv(env.ACCESS_TOKEN_JWT_KEY, 'ACCESS_TOKEN_JWT_KEY');
+        this._accessTokenExpires = this.requireEnv(env.ACCESS_TOKEN_EXPIRES, 'ACCESS_TOKEN_EXPIRES');
+        this._refreshTokenJwtKey = this.requireEnv(env.REFRESH_TOKEN_JWT_KEY, 'REFRESH_TOKEN_JWT_KEY');
+        this._refreshTokenExpires = this.requireEnv(env.REFRESH_TOKEN_EXPIRES, 'REFRESH_TOKEN_EXPIRES');
+        this._pepper = this.requireEnv(env.PEPPER, 'PEPPER');
         this._corsOrigin = env.CORS_ORIGIN || [];
         this._isProduction = env.ENV_PRODUCTION === `true`;
+    }
+
+    private requireEnv(value: string | undefined, name: string): string {
+        if (!value) {
+            throw new Error(`必須環境変数が設定されていません: ${name}`);
+        }
+        return value;
     }
 
     get accessTokenJwtKey() {
