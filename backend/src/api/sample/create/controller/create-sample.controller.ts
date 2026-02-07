@@ -3,10 +3,10 @@ import { Hono } from "hono";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../../constant";
 import type { AppEnv } from "../../../../type";
 import { formatZodErrors } from "../../../../util";
+import { CreateSampleResponseDto } from "../dto";
 import { CreateSampleRepository } from "../repository";
 import { CreateSampleSchema } from "../schema";
 import { CreateSampleService } from "../service";
-import { CreateSampleUseCase } from "../usecase";
 
 /**
  * サンプル作成
@@ -24,11 +24,11 @@ const createSample = new Hono<AppEnv>().post(
     const db = c.get('db');
     const repository = new CreateSampleRepository(db);
     const service = new CreateSampleService(repository);
-    const useCase = new CreateSampleUseCase(service);
 
-    const result = await useCase.execute(body);
+    const entity = await service.create(body.name, body.description);
+    const responseDto = new CreateSampleResponseDto(entity);
 
-    return c.json({ message: result.message, data: result.data }, result.status);
+    return c.json({ message: "サンプルを作成しました。", data: responseDto.value }, HTTP_STATUS.CREATED);
   }
 );
 

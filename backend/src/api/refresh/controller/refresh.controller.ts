@@ -1,9 +1,10 @@
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
-import { Cookie, RefreshToken } from "../../../domain";
+import { AccessToken, Cookie, RefreshToken } from "../../../domain";
 import type { AppEnv } from "../../../type";
-import { RefreshUseCase } from "../usecase";
+import { RefreshRepository } from "../repository";
+import { RefreshService } from "../service";
 
 /**
  * トークンリフレッシュ
@@ -12,27 +13,46 @@ import { RefreshUseCase } from "../usecase";
 const refresh = new Hono<AppEnv>().post(API_ENDPOINT.REFRESH, async (c) => {
 
     try {
-
         const db = c.get('db');
-        const useCase = new RefreshUseCase(db);
+        const repository = new RefreshRepository(db);
+        const service = new RefreshService(repository);
         const cookie = new Cookie(getCookie(c));
         const refreshToken = RefreshToken.get(cookie);
 
-        const result = await useCase.execute(refreshToken);
-
-        if (!result.success) {
-            console.warn(`Refresh failed: ${result.message}`);
-
-            // エラー時はCookieをクリア
+        // トークン検証・ユーザーID取得
+        let userId;
+        try {
+            userId = await refreshToken.getPayload();
+        } catch {
+            console.warn("Refresh failed: リフレッシュトークンが無効です");
             setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.COOKIE_CLEAR_OPTION);
-
             return c.json({ message: "認証失敗" }, HTTP_STATUS.UNAUTHORIZED);
         }
 
-        // 新しいリフレッシュトークンをCookieに設定
-        setCookie(c, RefreshToken.COOKIE_KEY, result.data.refreshToken, RefreshToken.COOKIE_SET_OPTION);
+        // ユーザー情報を取得
+        const userInfo = await service.getUser(userId);
+        if (!userInfo) {
+            console.warn("Refresh failed: ユーザーが見つかりません");
+            setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.COOKIE_CLEAR_OPTION);
+            return c.json({ message: "認証失敗" }, HTTP_STATUS.UNAUTHORIZED);
+        }
 
-        return c.json({ message: result.message, data: result.data.accessToken }, 200);
+        // 絶対期限チェック
+        const isExpired = await refreshToken.isAbsoluteExpired();
+        if (isExpired) {
+            console.warn("Refresh failed: リフレッシュトークンの絶対期限切れ");
+            setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.COOKIE_CLEAR_OPTION);
+            return c.json({ message: "認証失敗" }, HTTP_STATUS.UNAUTHORIZED);
+        }
+
+        // 新しいトークンを生成
+        const newRefreshToken = await refreshToken.refresh();
+        const accessToken = await AccessToken.create(userId);
+
+        // 新しいリフレッシュトークンをCookieに設定
+        setCookie(c, RefreshToken.COOKIE_KEY, newRefreshToken.value, RefreshToken.COOKIE_SET_OPTION);
+
+        return c.json({ message: "認証成功", data: accessToken.token }, 200);
     } catch (e) {
         console.warn(`Refresh failed: ${e}`);
 

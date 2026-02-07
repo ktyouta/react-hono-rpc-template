@@ -1,9 +1,9 @@
 import { Hono } from "hono";
-import { API_ENDPOINT } from "../../../../constant";
+import { API_ENDPOINT, HTTP_STATUS } from "../../../../constant";
 import type { AppEnv } from "../../../../type";
+import { GetListSampleResponseDto } from "../dto";
 import { GetListSampleRepository } from "../repository";
 import { GetListSampleService } from "../service";
-import { GetListSampleUseCase } from "../usecase";
 
 /**
  * サンプル一覧取得
@@ -13,11 +13,11 @@ const getListSample = new Hono<AppEnv>().get(API_ENDPOINT.SAMPLE, async (c) => {
   const db = c.get('db');
   const repository = new GetListSampleRepository(db);
   const service = new GetListSampleService(repository);
-  const useCase = new GetListSampleUseCase(service);
 
-  const result = await useCase.execute();
+  const entities = await service.findAll();
+  const responseDto = new GetListSampleResponseDto(entities);
 
-  return c.json({ message: result.message, data: result.data }, result.status);
+  return c.json({ message: "サンプル一覧を取得しました。", data: responseDto.value }, HTTP_STATUS.OK);
 });
 
 export { getListSample };

@@ -7,7 +7,7 @@ import { FrontUserId, RefreshToken } from "../../../domain";
 import { authMiddleware, userOperationGuardMiddleware } from "../../../middleware";
 import type { AppEnv } from "../../../type";
 import { formatZodErrors } from "../../../util";
-import { DeleteFrontUserUseCase } from "../usecase";
+import { DeleteFrontUserRepository } from "../repository";
 
 /**
  * ユーザー削除
@@ -25,12 +25,21 @@ const deleteFrontUser = new Hono<AppEnv>().delete(
     async (c) => {
         const { userId } = c.req.valid("param");
         const db = c.get('db');
-        const useCase = new DeleteFrontUserUseCase(db);
+        const frontUserId = FrontUserId.of(userId);
 
-        const result = await useCase.execute(FrontUserId.of(userId));
+        // トランザクション: ログイン情報削除 + ユーザー情報削除
+        const deleted = await db.transaction(async (tx) => {
+            const txRepo = new DeleteFrontUserRepository(tx);
 
-        if (!result.success) {
-            return c.json({ message: result.message }, result.status);
+            // ログイン情報を削除
+            await txRepo.deleteFrontLoginUser(frontUserId);
+
+            // ユーザー情報を削除
+            return await txRepo.deleteFrontUser(frontUserId);
+        });
+
+        if (!deleted) {
+            return c.json({ message: "ユーザーが見つかりません。" }, HTTP_STATUS.NOT_FOUND);
         }
 
         // リフレッシュトークンCookieをクリア
@@ -41,4 +50,3 @@ const deleteFrontUser = new Hono<AppEnv>().delete(
 );
 
 export { deleteFrontUser };
-

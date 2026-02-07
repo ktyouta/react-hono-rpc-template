@@ -3,10 +3,10 @@ import { Hono } from "hono";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../../constant";
 import type { AppEnv } from "../../../../type";
 import { formatZodErrors } from "../../../../util";
+import { UpdateSampleResponseDto } from "../dto";
 import { UpdateSampleRepository } from "../repository";
 import { UpdateSampleParamSchema, UpdateSampleSchema } from "../schema";
 import { UpdateSampleService } from "../service";
-import { UpdateSampleUseCase } from "../usecase";
 
 /**
  * サンプル更新
@@ -30,15 +30,16 @@ const updateSample = new Hono<AppEnv>().put(
     const db = c.get('db');
     const repository = new UpdateSampleRepository(db);
     const service = new UpdateSampleService(repository);
-    const useCase = new UpdateSampleUseCase(service);
 
-    const result = await useCase.execute(Number(id), body);
+    const entity = await service.update(Number(id), body.name, body.description);
 
-    if (!result.success) {
-      return c.json({ message: result.message }, result.status);
+    if (!entity) {
+      return c.json({ message: "サンプルが見つかりません。" }, HTTP_STATUS.NOT_FOUND);
     }
 
-    return c.json({ message: result.message, data: result.data }, result.status);
+    const responseDto = new UpdateSampleResponseDto(entity);
+
+    return c.json({ message: "サンプルを更新しました。", data: responseDto.value }, HTTP_STATUS.OK);
   }
 );
 

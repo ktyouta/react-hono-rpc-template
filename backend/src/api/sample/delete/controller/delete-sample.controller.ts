@@ -6,7 +6,6 @@ import { formatZodErrors } from "../../../../util";
 import { DeleteSampleRepository } from "../repository";
 import { DeleteSampleParamSchema } from "../schema";
 import { DeleteSampleService } from "../service";
-import { DeleteSampleUseCase } from "../usecase";
 
 /**
  * サンプル削除
@@ -24,11 +23,14 @@ const deleteSample = new Hono<AppEnv>().delete(
     const db = c.get('db');
     const repository = new DeleteSampleRepository(db);
     const service = new DeleteSampleService(repository);
-    const useCase = new DeleteSampleUseCase(service);
 
-    const result = await useCase.execute(Number(id));
+    const deleted = await service.delete(Number(id));
 
-    return c.json({ message: result.message }, result.status);
+    if (!deleted) {
+      return c.json({ message: "サンプルが見つかりません。" }, HTTP_STATUS.NOT_FOUND);
+    }
+
+    return c.json({ message: "サンプルを削除しました。" }, HTTP_STATUS.OK);
   }
 );
 

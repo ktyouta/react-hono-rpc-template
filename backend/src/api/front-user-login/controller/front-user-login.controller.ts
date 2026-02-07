@@ -1,11 +1,23 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
-import { FrontUserLoginSchema, FrontUserLoginUseCase } from "..";
+import { envConfig } from "../../../config";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
-import { RefreshToken } from "../../../domain";
+import {
+    AccessToken,
+    FrontUserId,
+    FrontUserName,
+    FrontUserPassword,
+    FrontUserSalt,
+    Pepper,
+    RefreshToken,
+} from "../../../domain";
 import type { AppEnv } from "../../../type";
 import { formatZodErrors } from "../../../util";
+import { FrontUserLoginResponseDto } from "../dto";
+import { FrontUserLoginRepository } from "../repository";
+import { FrontUserLoginSchema } from "../schema";
+import { FrontUserLoginService } from "../service";
 
 
 /**
@@ -20,23 +32,57 @@ const frontUserLogin = new Hono<AppEnv>().post(
         }
     }),
     async (c) => {
-
         const body = c.req.valid("json");
         const db = c.get('db');
-        const useCase = new FrontUserLoginUseCase(db);
+        const repository = new FrontUserLoginRepository(db);
+        const service = new FrontUserLoginService(repository);
 
-        const result = await useCase.execute(body);
+        // ユーザー名からログイン情報を取得
+        const userName = new FrontUserName(body.name);
+        const loginInfo = await service.getLoginUser(userName);
 
-        if (!result.success) {
-            return c.json({ message: result.message }, result.status);
+        if (!loginInfo) {
+            return c.json({ message: "IDかパスワードが間違っています。" }, HTTP_STATUS.UNAUTHORIZED);
         }
 
-        // リフレッシュトークンをCookieに設定
-        setCookie(c, RefreshToken.COOKIE_KEY, result.data.refreshToken, RefreshToken.COOKIE_SET_OPTION);
+        // パスワード検証
+        const frontUserId = FrontUserId.of(loginInfo.id);
+        const salt = FrontUserSalt.of(loginInfo.salt);
+        const pepper = new Pepper(envConfig.pepper);
+        const password = await FrontUserPassword.hash(
+            body.password,
+            salt,
+            pepper
+        );
 
-        return c.json({ message: result.message, data: result.data.response }, result.status);
+        if (service.isMatchPassword(password, loginInfo)) {
+            return c.json({ message: "IDかパスワードが間違っています。" }, HTTP_STATUS.UNAUTHORIZED);
+        }
+
+        // ユーザー情報を取得
+        const userInfo = await service.getUserInfo(frontUserId);
+
+        if (!userInfo) {
+            return c.json({ message: "IDかパスワードが間違っています。" }, HTTP_STATUS.UNAUTHORIZED);
+        }
+
+        // トークンを発行
+        const accessToken = await AccessToken.create(frontUserId);
+        const refreshToken = await RefreshToken.create(frontUserId);
+
+        // 最終ログイン日時を更新
+        await service.updateLastLoginDate(frontUserId);
+
+        const responseDto = new FrontUserLoginResponseDto(
+            userInfo,
+            accessToken.token
+        );
+
+        // リフレッシュトークンをCookieに設定
+        setCookie(c, RefreshToken.COOKIE_KEY, refreshToken.value, RefreshToken.COOKIE_SET_OPTION);
+
+        return c.json({ message: "ログイン成功", data: responseDto.value }, HTTP_STATUS.OK);
     }
 );
 
 export { frontUserLogin };
-

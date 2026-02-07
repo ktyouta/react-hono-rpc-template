@@ -3,12 +3,18 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
-import { FrontUserId, RefreshToken } from "../../../domain";
+import {
+    FrontUserBirthday,
+    FrontUserId,
+    FrontUserName,
+    RefreshToken,
+} from "../../../domain";
 import { authMiddleware, userOperationGuardMiddleware } from "../../../middleware";
 import type { AppEnv } from "../../../type";
 import { formatZodErrors } from "../../../util";
+import { UpdateFrontUserResponseDto } from "../dto";
+import { UpdateFrontUserRepository } from "../repository";
 import { UpdateFrontUserSchema } from "../schema";
-import { UpdateFrontUserUseCase } from "../usecase";
 
 /**
  * ユーザー更新
@@ -32,20 +38,55 @@ const updateFrontUser = new Hono<AppEnv>().patch(
         const { userId } = c.req.valid("param");
         const body = c.req.valid("json");
         const db = c.get('db');
-        const useCase = new UpdateFrontUserUseCase(db);
 
-        const result = await useCase.execute(FrontUserId.of(userId), body);
+        const frontUserId = FrontUserId.of(userId);
+        const userName = new FrontUserName(body.name);
+        const userBirthday = new FrontUserBirthday(body.birthday);
 
-        if (!result.success) {
-            return c.json({ message: result.message }, result.status);
+        // トランザクション: 重複チェック + ログイン情報更新 + ユーザー情報更新
+        const updated = await db.transaction(async (tx) => {
+            const txRepo = new UpdateFrontUserRepository(tx);
+
+            // ユーザー名重複チェック（自身を除く）
+            if (await txRepo.checkUserNameExists(frontUserId, userName)) {
+                return { duplicate: true as const };
+            }
+
+            // ログイン情報を更新
+            await txRepo.updateFrontLoginUser(frontUserId, userName.value);
+
+            // ユーザー情報を更新
+            const result = await txRepo.updateFrontUser(
+                frontUserId,
+                userName.value,
+                userBirthday.value
+            );
+
+            return { duplicate: false as const, user: result };
+        });
+
+        if (updated.duplicate) {
+            return c.json({ message: "既にユーザーが存在しています。" }, HTTP_STATUS.UNPROCESSABLE_ENTITY);
         }
 
-        // リフレッシュトークンをCookieに設定
-        setCookie(c, RefreshToken.COOKIE_KEY, result.data.refreshToken, RefreshToken.COOKIE_SET_OPTION);
+        if (!updated.user) {
+            return c.json({ message: "ユーザーが見つかりません。" }, HTTP_STATUS.NOT_FOUND);
+        }
 
-        return c.json({ message: result.message, data: result.data.response }, result.status);
+        // 新しいリフレッシュトークンを発行
+        const refreshToken = await RefreshToken.create(frontUserId);
+
+        const responseDto = new UpdateFrontUserResponseDto(
+            updated.user.id,
+            updated.user.name,
+            updated.user.birthday
+        );
+
+        // リフレッシュトークンをCookieに設定
+        setCookie(c, RefreshToken.COOKIE_KEY, refreshToken.value, RefreshToken.COOKIE_SET_OPTION);
+
+        return c.json({ message: "ユーザー情報の更新が完了しました。", data: responseDto.value }, HTTP_STATUS.OK);
     }
 );
 
 export { updateFrontUser };
-

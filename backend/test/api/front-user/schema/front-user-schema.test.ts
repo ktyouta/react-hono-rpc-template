@@ -1,4 +1,4 @@
-import { UserIdParamSchema } from "@/schema";
+import { UserIdParamSchema } from "src/schema";
 import { describe, expect, it } from "vitest";
 import {
   CreateFrontUserSchema,
