@@ -13,18 +13,18 @@ export const paths = {
     },
     login: {
         path: '/login',
-        getHref: (redirectTo?: string) => `${paths.login.path}${redirectTo ? `redirectTo=${encodeURIComponent(redirectTo)}` : ``}`,
+        getHref: (redirectTo?: string) => `${paths.login.path}${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ``}`,
     },
     siginup: {
         path: '/siginup',
-        getHref: (redirectTo?: string) => `${paths.siginup.path}${redirectTo ? `redirectTo=${encodeURIComponent(redirectTo)}` : ``}`,
+        getHref: (redirectTo?: string) => `${paths.siginup.path}${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ``}`,
     },
     updateUser: {
         path: '/update-user',
-        getHref: (redirectTo?: string) => `${paths.updateUser.path}${redirectTo ? `redirectTo=${encodeURIComponent(redirectTo)}` : ``}`,
+        getHref: (redirectTo?: string) => `${paths.updateUser.path}${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ``}`,
     },
     updatePassword: {
         path: '/update-password',
-        getHref: (redirectTo?: string) => `${paths.updatePassword.path}${redirectTo ? `redirectTo=${encodeURIComponent(redirectTo)}` : ``}`,
+        getHref: (redirectTo?: string) => `${paths.updatePassword.path}${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ``}`,
     }
 } as const;

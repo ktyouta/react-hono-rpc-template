@@ -18,7 +18,7 @@ export function useLogin() {
     // ログインユーザー情報
     const loginUser = LoginUserContext.useCtx();
     // ルーティング用
-    const { appGoBack } = useAppNavigation();
+    const { appNavigate, appGoBack } = useAppNavigation();
 
     /**
      * ログインリクエスト
@@ -27,6 +27,7 @@ export function useLogin() {
         // 正常終了後の処理
         onSuccess: (res) => {
             setLoginUserInfo(res.data.user);
+            appNavigate(paths.home.path);
         },
         // 失敗後の処理
         onError: (errorMessage: string) => {

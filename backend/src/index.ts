@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { frontUser, frontUserLogin, health, refresh, sample, verify } from "./api";
+import { frontUser, frontUserLogin, frontUserLogout, health, refresh, sample, verify } from "./api";
 import { envConfig } from "./config";
 import {
   accessLogMiddleware,
@@ -48,7 +48,8 @@ const routes = app
   .route("/", frontUser)
   .route("/", frontUserLogin)
   .route("/", refresh)
-  .route("/", verify);
+  .route("/", verify)
+  .route("/", frontUserLogout);
 
 // RPC用の型エクスポート
 export type AppType = typeof routes;

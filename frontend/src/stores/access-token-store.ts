@@ -1,4 +1,3 @@
-import React from "react";
 
 // アクセストークン
 export let accessTokenRef: string | null = null;
@@ -6,7 +5,7 @@ export let accessTokenRef: string | null = null;
 let resetLoginRef: ResetLoginType | null = null;
 
 type ResetLoginType = {
-    setIsLogin: React.Dispatch<React.SetStateAction<boolean>>,
+    resetUser(): void,
     moveLogin(): void,
 }
 
@@ -37,6 +36,6 @@ export const registerResetLogin = (props: ResetLoginType) => {
  * ログインリセット
  */
 export const resetLogin = () => {
-    resetLoginRef?.setIsLogin(false);
+    resetLoginRef?.resetUser();
     resetLoginRef?.moveLogin();
 }

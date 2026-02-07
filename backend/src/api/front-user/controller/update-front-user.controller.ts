@@ -1,3 +1,4 @@
+import { UserIdParamSchema } from "@/schema";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
@@ -6,7 +7,7 @@ import { FrontUserId, RefreshToken } from "../../../domain";
 import { authMiddleware, userOperationGuardMiddleware } from "../../../middleware";
 import type { AppEnv } from "../../../type";
 import { formatZodErrors } from "../../../util";
-import { UpdateFrontUserSchema, UserIdParamSchema } from "../schema";
+import { UpdateFrontUserSchema } from "../schema";
 import { UpdateFrontUserUseCase } from "../usecase";
 
 /**
@@ -47,3 +48,4 @@ const updateFrontUser = new Hono<AppEnv>().patch(
 );
 
 export { updateFrontUser };
+

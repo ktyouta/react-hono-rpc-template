@@ -9,6 +9,8 @@ export const API_ENDPOINT = {
   FRONT_USER_LOGIN: "/api/v1/frontuser-login",
   REFRESH: "/api/v1/refresh",
   VERIFY: "/api/v1/verify",
+  LOGOUT: "/api/v1/frontuser-logout",
+  FRONT_USER_PASSWORD: "/api/v1/frontuser-password/:userId",
 } as const;
 
 export type ApiEndpointType = (typeof API_ENDPOINT)[keyof typeof API_ENDPOINT];

@@ -1,5 +1,8 @@
+import { paths } from "@/config/paths";
+import { registerResetLogin } from "@/stores/access-token-store";
 import { createCtx } from "@/utils/create-ctx";
 import { ReactNode, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { LoginUserType, verify } from "../api/verify";
 
 // ログインユーザー情報
@@ -17,9 +20,24 @@ export function LoginUserProvider(props: PropsType) {
 
     // ログインユーザー情報
     const [loginUser, setLoginUser] = useState<LoginUserType | null>(null);
-
+    // ルーティング用
+    const navigate = useNavigate();
     // 認証チェック
-    const { data, isSuccess } = verify();
+    const { data } = verify();
+
+    /**
+     * ログイン画面に遷移
+     */
+    function moveLogin() {
+        navigate(paths.login.getHref(window.location.pathname));
+    }
+
+    /**
+     * ユーザー情報をリセット
+     */
+    function resetUser() {
+        setLoginUser(null);
+    }
 
     useEffect(() => {
         if (data && !loginUser) {
@@ -29,7 +47,15 @@ export function LoginUserProvider(props: PropsType) {
                 birthday: data.data.userInfo.birthday,
             });
         }
-    }, [data, isSuccess, loginUser]);
+    }, [data, loginUser]);
+
+    // ログインリセット処理を登録
+    useEffect(() => {
+        registerResetLogin({
+            resetUser,
+            moveLogin,
+        });
+    }, []);
 
     return (
         <LoginUserContext.Provider value={loginUser}>
