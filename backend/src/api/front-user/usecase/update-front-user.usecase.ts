@@ -32,7 +32,7 @@ type Output =
 export class UpdateFrontUserUseCase {
     private readonly repository: UpdateFrontUserRepository;
 
-    constructor(db: Database) {
+    constructor(private readonly db: Database) {
         this.repository = new UpdateFrontUserRepository(db);
     }
 
@@ -43,8 +43,29 @@ export class UpdateFrontUserUseCase {
         const userName = new FrontUserName(requestBody.name);
         const userBirthday = new FrontUserBirthday(requestBody.birthday);
 
-        // ユーザー名重複チェック（自身を除く）
-        if (await this.repository.checkUserNameExists(userId, userName)) {
+        // トランザクション: 重複チェック + ログイン情報更新 + ユーザー情報更新
+        const updated = await this.db.transaction(async (tx) => {
+            const txRepo = new UpdateFrontUserRepository(tx);
+
+            // ユーザー名重複チェック（自身を除く）
+            if (await txRepo.checkUserNameExists(userId, userName)) {
+                return { duplicate: true as const };
+            }
+
+            // ログイン情報を更新
+            await txRepo.updateFrontLoginUser(userId, userName.value);
+
+            // ユーザー情報を更新
+            const result = await txRepo.updateFrontUser(
+                userId,
+                userName.value,
+                userBirthday.value
+            );
+
+            return { duplicate: false as const, user: result };
+        });
+
+        if (updated.duplicate) {
             return {
                 success: false,
                 status: HTTP_STATUS.UNPROCESSABLE_ENTITY,
@@ -52,17 +73,7 @@ export class UpdateFrontUserUseCase {
             };
         }
 
-        // ログイン情報を更新
-        await this.repository.updateFrontLoginUser(userId, userName.value);
-
-        // ユーザー情報を更新
-        const updated = await this.repository.updateFrontUser(
-            userId,
-            userName.value,
-            userBirthday.value
-        );
-
-        if (!updated) {
+        if (!updated.user) {
             return {
                 success: false,
                 status: HTTP_STATUS.NOT_FOUND,
@@ -74,9 +85,9 @@ export class UpdateFrontUserUseCase {
         const refreshToken = await RefreshToken.create(userId);
 
         const responseDto = new UpdateFrontUserResponseDto(
-            updated.id,
-            updated.name,
-            updated.birthday
+            updated.user.id,
+            updated.user.name,
+            updated.user.birthday
         );
 
         return {

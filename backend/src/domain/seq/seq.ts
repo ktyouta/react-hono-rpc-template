@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import type { Database } from "../../infrastructure/db";
+import type { DbClient } from "../../infrastructure/db";
 import { seqMaster } from "../../infrastructure/db";
 
 /**
@@ -29,7 +29,7 @@ export class SeqIssue {
    * @param key シーケンスキー
    * @param db データベースクライアント
    */
-  static async get(key: SeqKey, db: Database): Promise<number> {
+  static async get(key: SeqKey, db: DbClient): Promise<number> {
     const now = new Date().toISOString();
 
     // 現在の値を取得

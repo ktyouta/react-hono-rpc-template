@@ -1,7 +1,9 @@
 import { LoginUserContext, SetLoginUserContext } from '@/app/components/login-user-provider';
 import { paths } from '@/config/paths';
 import { useAppNavigation } from '@/hooks/use-app-navigation';
+import { useQueryParams } from '@/hooks/use-query-params';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLoginMutation } from '../api/login';
 import { LoginRequestType } from '../types/login-request-type';
 import { useLoginForm } from './use-login-form';
@@ -18,7 +20,11 @@ export function useLogin() {
     // ログインユーザー情報
     const loginUser = LoginUserContext.useCtx();
     // ルーティング用
+    const navigate = useNavigate();
     const { appNavigate, appGoBack } = useAppNavigation();
+    // リダイレクト先
+    const queryParams = useQueryParams();
+    const redirectTo = queryParams.redirectTo || paths.home.path;
 
     /**
      * ログインリクエスト
@@ -27,7 +33,7 @@ export function useLogin() {
         // 正常終了後の処理
         onSuccess: (res) => {
             setLoginUserInfo(res.data.user);
-            appNavigate(paths.home.path);
+            appNavigate(redirectTo);
         },
         // 失敗後の処理
         onError: (errorMessage: string) => {
@@ -71,5 +77,6 @@ export function useLogin() {
         clickLogin,
         loginUser,
         back,
+        redirectTo,
     }
 }

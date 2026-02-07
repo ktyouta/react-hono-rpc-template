@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CreateFrontUserUseCase } from "../../../../src/api/front-user/usecase/create-front-user.usecase";
+import { CreateFrontUserRepository } from "../../../../src/api/front-user/repository";
 import { HTTP_STATUS } from "../../../../src/constant";
 import { FrontUserId } from "../../../../src/domain";
 import type { Database } from "../../../../src/infrastructure/db";
@@ -70,8 +71,12 @@ describe("CreateFrontUserUseCase", () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockDb = {} as Database;
+        mockDb = {
+            transaction: vi.fn().mockImplementation(async (cb: any) => cb(mockDb)),
+        } as unknown as Database;
         useCase = new CreateFrontUserUseCase(mockDb);
+        // トランザクション内で生成されるリポジトリも同一インスタンスを返すようにする
+        vi.mocked(CreateFrontUserRepository).mockImplementation(() => (useCase as any).repository);
     });
 
     describe("execute", () => {

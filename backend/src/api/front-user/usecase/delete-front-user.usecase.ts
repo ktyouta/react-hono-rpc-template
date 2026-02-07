@@ -20,16 +20,21 @@ type Output =
 export class DeleteFrontUserUseCase {
   private readonly repository: DeleteFrontUserRepository;
 
-  constructor(db: Database) {
+  constructor(private readonly db: Database) {
     this.repository = new DeleteFrontUserRepository(db);
   }
 
   async execute(userId: FrontUserId): Promise<Output> {
-    // ログイン情報を削除
-    await this.repository.deleteFrontLoginUser(userId);
+    // トランザクション: ログイン情報削除 + ユーザー情報削除
+    const deleted = await this.db.transaction(async (tx) => {
+      const txRepo = new DeleteFrontUserRepository(tx);
 
-    // ユーザー情報を削除
-    const deleted = await this.repository.deleteFrontUser(userId);
+      // ログイン情報を削除
+      await txRepo.deleteFrontLoginUser(userId);
+
+      // ユーザー情報を削除
+      return await txRepo.deleteFrontUser(userId);
+    });
 
     if (!deleted) {
       return {

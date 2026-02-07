@@ -1,4 +1,4 @@
-import { envConfig } from "@/config";
+import { envConfig } from "../../../config";
 import { HTTP_STATUS } from "../../../constant";
 import {
     FrontUserId,

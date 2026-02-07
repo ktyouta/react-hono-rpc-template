@@ -1,9 +1,9 @@
-import { FrontUserId } from "@/domain";
-import { UserIdParamSchema } from "@/schema";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
+import { FrontUserId } from "../../../domain";
 import { authMiddleware, userOperationGuardMiddleware } from "../../../middleware";
+import { UserIdParamSchema } from "../../../schema";
 import type { AppEnv } from "../../../type";
 import { formatZodErrors } from "../../../util";
 import { FrontUserPasswordSchema } from "../schema";

@@ -67,23 +67,30 @@ export class CreateFrontUserUseCase {
             };
         }
 
-        // ユーザーIDを採番
+        // トランザクション: ID採番 + ログイン情報挿入 + ユーザー情報挿入
         const keyModel = new SeqKey(CreateFrontUserUseCase.SEQ_KEY);
-        const newId = await SeqIssue.get(keyModel, this.db);
-        const frontUserId = FrontUserId.of(newId);
+        const { userEntity, frontUserId } = await this.db.transaction(async (tx) => {
+            const txRepo = new CreateFrontUserRepository(tx);
 
-        // ログイン情報を挿入
-        const loginUserEntity = new FrontUserLoginEntity(
-            frontUserId,
-            userName,
-            userPassword,
-            salt
-        );
-        await this.repository.insertFrontLoginUser(loginUserEntity);
+            // ユーザーIDを採番
+            const newId = await SeqIssue.get(keyModel, tx);
+            const userId = FrontUserId.of(newId);
 
-        // ユーザー情報を挿入
-        const userEntity = new FrontUserEntity(frontUserId, userName, userBirthday);
-        await this.repository.insertFrontUser(userEntity);
+            // ログイン情報を挿入
+            const loginUserEntity = new FrontUserLoginEntity(
+                userId,
+                userName,
+                userPassword,
+                salt
+            );
+            await txRepo.insertFrontLoginUser(loginUserEntity);
+
+            // ユーザー情報を挿入
+            const entity = new FrontUserEntity(userId, userName, userBirthday);
+            await txRepo.insertFrontUser(entity);
+
+            return { userEntity: entity, frontUserId: userId };
+        });
 
         // トークンを発行
         const accessToken = await AccessToken.create(frontUserId);

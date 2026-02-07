@@ -1,7 +1,7 @@
 import { and, eq, ne } from "drizzle-orm";
 import { FLG } from "../../../constant";
 import type { FrontUserId, FrontUserName } from "../../../domain";
-import type { Database, FrontUserMaster } from "../../../infrastructure/db";
+import type { DbClient, FrontUserMaster } from "../../../infrastructure/db";
 import { frontUserLoginMaster, frontUserMaster } from "../../../infrastructure/db";
 import type { IUpdateFrontUserRepository } from "./update-front-user.repository.interface";
 
@@ -9,7 +9,7 @@ import type { IUpdateFrontUserRepository } from "./update-front-user.repository.
  * ユーザー更新リポジトリ実装
  */
 export class UpdateFrontUserRepository implements IUpdateFrontUserRepository {
-  constructor(private readonly db: Database) { }
+  constructor(private readonly db: DbClient) { }
 
   /**
    * 他のユーザーで同じユーザー名が存在するかチェック

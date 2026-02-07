@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { FLG } from "../../../constant";
 import type { FrontUserId } from "../../../domain";
-import type { Database } from "../../../infrastructure/db";
+import type { DbClient } from "../../../infrastructure/db";
 import { frontUserLoginMaster, frontUserMaster } from "../../../infrastructure/db";
 import type { IDeleteFrontUserRepository } from "./delete-front-user.repository.interface";
 
@@ -9,7 +9,7 @@ import type { IDeleteFrontUserRepository } from "./delete-front-user.repository.
  * ユーザー削除リポジトリ実装
  */
 export class DeleteFrontUserRepository implements IDeleteFrontUserRepository {
-  constructor(private readonly db: Database) { }
+  constructor(private readonly db: DbClient) { }
 
   /**
    * ユーザー情報を論理削除
