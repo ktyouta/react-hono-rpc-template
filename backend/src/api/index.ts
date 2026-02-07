@@ -1,6 +1,7 @@
 export * from "./front-user";
 export * from "./front-user-login";
 export * from "./front-user-logout";
+export * from "./front-user-password";
 export * from "./health";
 export * from "./refresh";
 export * from "./sample";

@@ -1,9 +1,8 @@
 import { rpc } from '@/lib/rpc-client';
 import { useMutation } from '@tanstack/react-query';
-import type { InferResponseType, InferRequestType } from 'hono/client';
+import type { InferRequestType, InferResponseType } from 'hono/client';
 
-// NOTE: パスワード更新はユーザー更新と同じエンドポイントを使用
-const endpoint = rpc.api.v1.frontuser[':userId'].$patch;
+const endpoint = rpc.api.v1['frontuser-password'][':userId'].$patch;
 
 type ResponseType = InferResponseType<typeof endpoint>;
 type RequestType = InferRequestType<typeof endpoint>;

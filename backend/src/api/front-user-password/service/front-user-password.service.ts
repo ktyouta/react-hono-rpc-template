@@ -1,37 +1,22 @@
-import type { FrontUserId, FrontUserName, FrontUserPassword } from "../../../domain";
+import type { FrontUserId, FrontUserPassword } from "../../../domain";
 import type {
-  FrontUserLoginMaster,
-  FrontUserMaster,
+  FrontUserLoginMaster
 } from "../../../infrastructure/db";
-import type { IFrontUserLoginRepository } from "../repository";
+import { IFrontUserPasswordRepository } from "../repository";
 
 /**
  * ログインサービス
  */
-export class FrontUserLoginService {
-  constructor(private readonly repository: IFrontUserLoginRepository) { }
+export class FrontUserPasswordService {
+  constructor(private readonly repository: IFrontUserPasswordRepository) { }
 
   /**
    * ログイン情報を取得
    */
   async getLoginUser(
-    userName: FrontUserName
+    userId: FrontUserId
   ): Promise<FrontUserLoginMaster | undefined> {
-    return await this.repository.getLoginUser(userName);
-  }
-
-  /**
-   * ユーザー情報を取得
-   */
-  async getUserInfo(userId: FrontUserId): Promise<FrontUserMaster | undefined> {
-    return await this.repository.getUserInfo(userId);
-  }
-
-  /**
-   * 最終ログイン日時を更新
-   */
-  async updateLastLoginDate(userId: FrontUserId): Promise<void> {
-    await this.repository.updateLastLoginDate(userId);
+    return await this.repository.getLoginUser(userId);
   }
 
   /**
@@ -54,5 +39,15 @@ export class FrontUserLoginService {
     }
 
     return true;
+  }
+
+  /**
+   * ログイン情報を更新
+   * @param userId 
+   * @param newPassword 
+   */
+  async updateFrontLoginUser(userId: FrontUserId, newPassword: FrontUserPassword) {
+    const result = await this.repository.updateFrontLoginUser(userId, newPassword);
+    return result;
   }
 }

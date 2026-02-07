@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
+import { UserIdParamSchema } from "@/schema";
+import { describe, expect, it } from "vitest";
 import {
   CreateFrontUserSchema,
   UpdateFrontUserSchema,
-  UserIdParamSchema,
 } from "../../../../src/api/front-user/schema";
 
 describe("FrontUser Schema Validation", () => {

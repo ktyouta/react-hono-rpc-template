@@ -34,7 +34,7 @@ const updateFrontUser = new Hono<AppEnv>().patch(
         const db = c.get('db');
         const useCase = new UpdateFrontUserUseCase(db);
 
-        const result = await useCase.execute(FrontUserId.of(Number(userId)), body);
+        const result = await useCase.execute(FrontUserId.of(userId), body);
 
         if (!result.success) {
             return c.json({ message: result.message }, result.status);

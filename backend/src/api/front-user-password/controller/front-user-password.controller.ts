@@ -1,3 +1,4 @@
+import { FrontUserId } from "@/domain";
 import { UserIdParamSchema } from "@/schema";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
@@ -5,13 +6,14 @@ import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
 import { authMiddleware, userOperationGuardMiddleware } from "../../../middleware";
 import type { AppEnv } from "../../../type";
 import { formatZodErrors } from "../../../util";
-import { FrontUserPasswordSchema } from "../schema/front-user-password.schema";
+import { FrontUserPasswordSchema } from "../schema";
+import { FrontUserPasswordUseCase } from "../usecase";
 
 /**
  * ユーザー更新
  * @route PATCH /api/v1/frontuser-password/:userId
  */
-const updateFrontUser = new Hono<AppEnv>().patch(
+const frontUserPassword = new Hono<AppEnv>().patch(
     `${API_ENDPOINT.FRONT_USER_PASSWORD}`,
     userOperationGuardMiddleware,
     authMiddleware,
@@ -27,13 +29,19 @@ const updateFrontUser = new Hono<AppEnv>().patch(
     }),
     async (c) => {
         const { userId } = c.req.valid("param");
-        const authUser = c.var.user;
         const body = c.req.valid("json");
         const db = c.get('db');
+        const useCase = new FrontUserPasswordUseCase(db);
 
-        return c.json({ message: ``, data: `` }, 200);
+        const result = await useCase.execute(FrontUserId.of(userId), body);
+
+        if (!result.success) {
+            return c.json({ message: result.message }, result.status);
+        }
+
+        return c.json({ message: result.message }, result.status);
     }
 );
 
-export { updateFrontUser };
+export { frontUserPassword };
 

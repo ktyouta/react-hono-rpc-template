@@ -27,7 +27,7 @@ const deleteFrontUser = new Hono<AppEnv>().delete(
         const db = c.get('db');
         const useCase = new DeleteFrontUserUseCase(db);
 
-        const result = await useCase.execute(FrontUserId.of(Number(userId)));
+        const result = await useCase.execute(FrontUserId.of(userId));
 
         if (!result.success) {
             return c.json({ message: result.message }, result.status);

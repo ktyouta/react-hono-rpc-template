@@ -72,7 +72,7 @@ export class FrontUserLoginUseCase {
             pepper
         );
 
-        if (password.value !== loginInfo.password) {
+        if (this.service.isMatchPassword(password, loginInfo)) {
             return this.unauthorized();
         }
 
