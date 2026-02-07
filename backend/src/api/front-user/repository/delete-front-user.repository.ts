@@ -24,7 +24,7 @@ export class DeleteFrontUserRepository implements IDeleteFrontUserRepository {
       })
       .where(
         and(
-          eq(frontUserMaster.userId, userId.value),
+          eq(frontUserMaster.id, userId.value),
           eq(frontUserMaster.deleteFlg, FLG.OFF)
         )
       )
@@ -45,7 +45,7 @@ export class DeleteFrontUserRepository implements IDeleteFrontUserRepository {
       })
       .where(
         and(
-          eq(frontUserLoginMaster.userId, userId.value),
+          eq(frontUserLoginMaster.id, userId.value),
           eq(frontUserLoginMaster.deleteFlg, FLG.OFF)
         )
       );

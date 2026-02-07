@@ -18,8 +18,8 @@ describe("CreateFrontUserResponseDto", () => {
     const dto = new CreateFrontUserResponseDto(entity, accessToken);
 
     expect(dto.value.accessToken).toBe("test-access-token");
-    expect(dto.value.user.userId).toBe(1);
-    expect(dto.value.user.userName).toBe("testuser");
+    expect(dto.value.user.id).toBe(1);
+    expect(dto.value.user.name).toBe("testuser");
     expect(dto.value.user.birthday).toBe("19900101");
   });
 });

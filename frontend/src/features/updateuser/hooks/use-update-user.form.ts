@@ -8,7 +8,7 @@ export function useUpdateUserForm() {
     return useForm<UpdateUserRequestType>({
         resolver: zodResolver(UpdateUserRequestSchema),
         defaultValues: {
-            userName: ``,
+            name: ``,
             birthday: {
                 year: ``,
                 month: ``,

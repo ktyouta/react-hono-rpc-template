@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeAll } from "vitest";
 import { SELF } from "cloudflare:test";
 
 type HealthResponse = {
-  status: number;
   message: string;
   data: {
     status: string;
@@ -11,7 +10,6 @@ type HealthResponse = {
 };
 
 type ErrorResponse = {
-  status: number;
   message: string;
 };
 
@@ -22,7 +20,6 @@ describe("Health Check API", () => {
     expect(res.status).toBe(200);
 
     const body = (await res.json()) as HealthResponse;
-    expect(body.status).toBe(200);
     expect(body.message).toBe("OK");
     expect(body.data).toHaveProperty("status", "healthy");
     expect(body.data).toHaveProperty("timestamp");
@@ -36,7 +33,6 @@ describe("Not Found Handler", () => {
     expect(res.status).toBe(404);
 
     const body = (await res.json()) as ErrorResponse;
-    expect(body.status).toBe(404);
     expect(body.message).toBe("Not Found");
   });
 });

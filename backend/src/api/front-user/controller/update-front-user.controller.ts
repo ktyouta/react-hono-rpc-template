@@ -5,7 +5,7 @@ import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
 import { FrontUserId, RefreshToken } from "../../../domain";
 import { authMiddleware, userOperationGuardMiddleware } from "../../../middleware";
 import type { AppEnv } from "../../../type";
-import { ApiResponse, formatZodErrors } from "../../../util";
+import { formatZodErrors } from "../../../util";
 import { UpdateFrontUserSchema, UserIdParamSchema } from "../schema";
 import { UpdateFrontUserUseCase } from "../usecase";
 
@@ -19,12 +19,12 @@ const updateFrontUser = new Hono<AppEnv>().patch(
     authMiddleware,
     zValidator("param", UserIdParamSchema, (result, c) => {
         if (!result.success) {
-            return ApiResponse.create(c, HTTP_STATUS.BAD_REQUEST, "パラメータが不正です。", formatZodErrors(result.error));
+            return c.json({ message: "パラメータが不正です。", data: formatZodErrors(result.error) }, HTTP_STATUS.BAD_REQUEST);
         }
     }),
     zValidator("json", UpdateFrontUserSchema, (result, c) => {
         if (!result.success) {
-            return ApiResponse.create(c, HTTP_STATUS.UNPROCESSABLE_ENTITY, "バリデーションエラー", formatZodErrors(result.error));
+            return c.json({ message: "バリデーションエラー", data: formatZodErrors(result.error) }, HTTP_STATUS.UNPROCESSABLE_ENTITY);
         }
     }),
     async (c) => {
@@ -36,13 +36,13 @@ const updateFrontUser = new Hono<AppEnv>().patch(
         const result = await useCase.execute(FrontUserId.of(Number(userId)), body);
 
         if (!result.success) {
-            return ApiResponse.create(c, result.status, result.message);
+            return c.json({ message: result.message }, result.status);
         }
 
         // リフレッシュトークンをCookieに設定
         setCookie(c, RefreshToken.COOKIE_KEY, result.data.refreshToken, RefreshToken.COOKIE_SET_OPTION);
 
-        return ApiResponse.create(c, result.status, result.message, result.data.response);
+        return c.json({ message: result.message, data: result.data.response }, result.status);
     }
 );
 

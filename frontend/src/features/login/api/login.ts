@@ -4,11 +4,11 @@ import type { InferRequestType, InferResponseType } from 'hono/client';
 
 const endpoint = rpc.api.v1['frontuser-login'].$post;
 
-type ResponseType = InferResponseType<typeof endpoint>;
+type SuccessResponseType = InferResponseType<typeof endpoint, 200>;
 type RequestType = InferRequestType<typeof endpoint>['json'];
 
 type PropsType = {
-    onSuccess: (data: ResponseType) => void;
+    onSuccess: (data: SuccessResponseType) => void;
     onError: (message: string) => void;
 };
 
@@ -22,7 +22,9 @@ export function useLoginMutation(props: PropsType) {
             }
             return res.json();
         },
-        onSuccess: props.onSuccess,
+        onSuccess: (data) => {
+            props.onSuccess(data);
+        },
         onError: (error: Error) => {
             props.onError(error.message);
         },

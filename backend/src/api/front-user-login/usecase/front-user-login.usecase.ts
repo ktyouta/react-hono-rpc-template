@@ -1,4 +1,3 @@
-import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { envConfig } from "../../../config";
 import { HTTP_STATUS } from "../../../constant";
 import {
@@ -20,7 +19,7 @@ import { FrontUserLoginService } from "../service";
 type Output =
     | {
         success: true;
-        status: ContentfulStatusCode;
+        status: 200;
         message: string;
         data: {
             response: FrontUserLoginResponseType;
@@ -29,7 +28,7 @@ type Output =
     }
     | {
         success: false;
-        status: ContentfulStatusCode;
+        status: 401;
         message: string;
     };
 
@@ -56,7 +55,7 @@ export class FrontUserLoginUseCase {
     async execute(requestBody: FrontUserLoginSchemaType): Promise<Output> {
 
         // ユーザー名からログイン情報を取得
-        const userName = new FrontUserName(requestBody.userName);
+        const userName = new FrontUserName(requestBody.name);
         const loginInfo = await this.service.getLoginUser(userName);
 
         if (!loginInfo) {
@@ -64,7 +63,7 @@ export class FrontUserLoginUseCase {
         }
 
         // パスワード検証
-        const frontUserId = FrontUserId.of(loginInfo.userId);
+        const frontUserId = FrontUserId.of(loginInfo.id);
         const salt = FrontUserSalt.of(loginInfo.salt);
         const pepper = new Pepper(envConfig.pepper);
         const password = await FrontUserPassword.hash(

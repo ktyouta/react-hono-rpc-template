@@ -2,7 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../../constant";
 import type { AppEnv } from "../../../../type";
-import { ApiResponse, formatZodErrors } from "../../../../util";
+import { formatZodErrors } from "../../../../util";
 import { DeleteSampleRepository } from "../repository";
 import { DeleteSampleParamSchema } from "../schema";
 import { DeleteSampleService } from "../service";
@@ -16,7 +16,7 @@ const deleteSample = new Hono<AppEnv>().delete(
   `${API_ENDPOINT.SAMPLE}/:id`,
   zValidator("param", DeleteSampleParamSchema, (result, c) => {
     if (!result.success) {
-      return ApiResponse.create(c, HTTP_STATUS.BAD_REQUEST, "パラメータが不正です。", formatZodErrors(result.error));
+      return c.json({ message: "パラメータが不正です。", data: formatZodErrors(result.error) }, HTTP_STATUS.BAD_REQUEST);
     }
   }),
   async (c) => {
@@ -28,7 +28,7 @@ const deleteSample = new Hono<AppEnv>().delete(
 
     const result = await useCase.execute(Number(id));
 
-    return ApiResponse.create(c, result.status, result.message);
+    return c.json({ message: result.message }, result.status);
   }
 );
 

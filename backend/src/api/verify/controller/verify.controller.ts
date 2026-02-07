@@ -3,7 +3,6 @@ import { getCookie, setCookie } from "hono/cookie";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
 import { Cookie, RefreshToken } from "../../../domain";
 import type { AppEnv } from "../../../type";
-import { ApiResponse } from "../../../util";
 import { VerifyUseCase } from "../usecase/verify.usecase";
 
 
@@ -29,16 +28,16 @@ const verify = new Hono<AppEnv>().get(
                 // エラー時はCookieをクリア
                 setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.COOKIE_CLEAR_OPTION);
 
-                return ApiResponse.create(c, HTTP_STATUS.UNAUTHORIZED, "認証失敗");
+                return c.json({ message: "認証失敗" }, HTTP_STATUS.UNAUTHORIZED);
             }
 
-            return ApiResponse.create(c, result.status, result.message, result.data.accessToken);
+            return c.json({ message: result.message, data: result.data }, 200);
         } catch (e) {
             console.warn(`Refresh failed: ${e}`);
 
             setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.COOKIE_CLEAR_OPTION);
 
-            return ApiResponse.create(c, HTTP_STATUS.UNAUTHORIZED, "認証失敗");
+            return c.json({ message: "認証失敗" }, HTTP_STATUS.UNAUTHORIZED);
         }
     }
 );

@@ -1,7 +1,6 @@
 import { LoginUserContext, SetLoginUserContext } from '@/app/components/login-user-provider';
 import { paths } from '@/config/paths';
 import { useAppNavigation } from '@/hooks/use-app-navigation';
-import { LoginUserType } from '@/types/login-user-type';
 import { useState } from 'react';
 import { useLoginMutation } from '../api/login';
 import { LoginRequestType } from '../types/login-request-type';
@@ -26,14 +25,14 @@ export function useLogin() {
      */
     const postMutation = useLoginMutation({
         // 正常終了後の処理
-        onSuccess: (res: unknown) => {
-            setLoginUserInfo(res as LoginUserType);
+        onSuccess: (res) => {
+            setLoginUserInfo(res.data.user);
         },
         // 失敗後の処理
         onError: (errorMessage: string) => {
             setErrMessage(errorMessage);
             reset({
-                userName: ``,
+                name: ``,
                 password: ``,
             });
         },
@@ -44,11 +43,11 @@ export function useLogin() {
      */
     const clickLogin = handleSubmit((data) => {
 
-        const userName = data.userName;
+        const name = data.name;
         const password = data.password
 
         const body: LoginRequestType = {
-            userName,
+            name,
             password,
         };
 

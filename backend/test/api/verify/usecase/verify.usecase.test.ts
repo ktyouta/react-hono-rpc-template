@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { VerifyUseCase } from "../../../../src/api/verify/usecase/verify.usecase";
 import { HTTP_STATUS } from "../../../../src/constant";
-import { FrontUserId, RefreshToken } from "../../../../src/domain";
+import { Cookie, FrontUserId, RefreshToken } from "../../../../src/domain";
 import type { Database } from "../../../../src/infrastructure/db";
 
 vi.mock("drizzle-orm", () => ({
@@ -53,8 +53,9 @@ describe("VerifyUseCase", () => {
     let useCase: VerifyUseCase;
 
     const mockUserInfo = {
-        userId: 1,
-        userName: "testuser",
+        id: 1,
+        name: "testuser",
+        birthday: "19900101",
     };
 
     beforeEach(() => {
@@ -73,7 +74,7 @@ describe("VerifyUseCase", () => {
             // Arrange
             const mockService = (useCase as any).service;
             mockService.getUser = vi.fn().mockResolvedValue(mockUserInfo);
-            const refreshToken = RefreshToken.get("valid-refresh-token");
+            const refreshToken = RefreshToken.get(new Cookie({ refresh_token: "valid-refresh-token" }));
 
             // Act
             const result = await useCase.execute(refreshToken);
@@ -91,7 +92,7 @@ describe("VerifyUseCase", () => {
             // Arrange
             const mockService = (useCase as any).service;
             mockService.getUser = vi.fn().mockResolvedValue(null);
-            const refreshToken = RefreshToken.get("valid-refresh-token");
+            const refreshToken = RefreshToken.get(new Cookie({ refresh_token: "valid-refresh-token" }));
 
             // Act
             const result = await useCase.execute(refreshToken);
@@ -107,7 +108,7 @@ describe("VerifyUseCase", () => {
             const mockService = (useCase as any).service;
             mockService.getUser = vi.fn().mockResolvedValue(mockUserInfo);
             mockRefreshTokenInstance.isAbsoluteExpired.mockResolvedValue(true);
-            const refreshToken = RefreshToken.get("valid-refresh-token");
+            const refreshToken = RefreshToken.get(new Cookie({ refresh_token: "valid-refresh-token" }));
 
             // Act
             const result = await useCase.execute(refreshToken);

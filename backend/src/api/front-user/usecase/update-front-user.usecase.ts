@@ -1,4 +1,3 @@
-import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { HTTP_STATUS } from "../../../constant";
 import {
     FrontUserBirthday,
@@ -14,7 +13,7 @@ import type { UpdateFrontUserSchemaType } from "../schema";
 type Output =
     | {
         success: true;
-        status: ContentfulStatusCode;
+        status: 200;
         message: string;
         data: {
             response: UpdateFrontUserResponseType;
@@ -23,7 +22,7 @@ type Output =
     }
     | {
         success: false;
-        status: ContentfulStatusCode;
+        status: 404 | 422;
         message: string;
     };
 
@@ -41,8 +40,8 @@ export class UpdateFrontUserUseCase {
         userId: FrontUserId,
         requestBody: UpdateFrontUserSchemaType
     ): Promise<Output> {
-        const userName = new FrontUserName(requestBody.userName);
-        const userBirthday = new FrontUserBirthday(requestBody.userBirthday);
+        const userName = new FrontUserName(requestBody.name);
+        const userBirthday = new FrontUserBirthday(requestBody.birthday);
 
         // ユーザー名重複チェック（自身を除く）
         if (await this.repository.checkUserNameExists(userId, userName)) {
@@ -75,9 +74,9 @@ export class UpdateFrontUserUseCase {
         const refreshToken = await RefreshToken.create(userId);
 
         const responseDto = new UpdateFrontUserResponseDto(
-            updated.userId,
-            updated.userName,
-            updated.userBirthday
+            updated.id,
+            updated.name,
+            updated.birthday
         );
 
         return {

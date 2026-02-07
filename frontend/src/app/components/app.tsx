@@ -8,17 +8,17 @@ import { ToastContainer } from 'react-toastify';
 import { LoginUserProvider } from './login-user-provider';
 import { AppRouter } from './router';
 
-export function App() {
-
-  //React-Query用
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-        refetchOnWindowFocus: false,
-      },
+//React-Query用
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
     },
-  });
+  },
+});
+
+export function App() {
 
   return (
     <BrowserRouter>

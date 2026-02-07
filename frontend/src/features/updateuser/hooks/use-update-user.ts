@@ -2,7 +2,6 @@ import { LoginUserContext, SetLoginUserContext } from '@/app/components/login-us
 import { paths } from '@/config/paths';
 import { useAppNavigation } from '@/hooks/use-app-navigation';
 import { useCreateYearList } from '@/hooks/use-create-year-list';
-import { LoginUserType } from '@/types/login-user-type';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useUpdateUserMutation } from '../api/update-user';
@@ -30,16 +29,14 @@ export function useUpdateUser() {
     // 年リスト
     const yearCoomboList = useCreateYearList();
     // フォーム
-    const { register, handleSubmit, formState: { errors }, reset, watch } = useUpdateUserForm();
+    const { register, handleSubmit, formState: { errors }, watch } = useUpdateUserForm();
     // ルーティング用
     const { appGoBack } = useAppNavigation();
-    // 登録リクエスト
+    // 更新リクエスト
     const postMutation = useUpdateUserMutation({
         // 正常終了後の処理
         onSuccess: (res) => {
-            if (res.data) {
-                setLoginUserInfo(res.data as LoginUserType);
-            }
+            setLoginUserInfo(res.data.user);
             navigate(paths.home.path);
         },
         // 失敗後の処理
@@ -55,17 +52,17 @@ export function useUpdateUser() {
      */
     const handleConfirm = handleSubmit((data) => {
 
-        if (!loginUser?.userId) {
+        if (!loginUser?.id) {
             setErrMessage('ユーザー情報が取得できません');
             return;
         }
 
-        // 登録リクエスト呼び出し
+        // 更新リクエスト呼び出し
         postMutation.mutate({
-            userId: String(loginUser.userId),
+            userId: String(loginUser.id),
             json: {
-                userName: data.userName,
-                userBirthday: formatBirthday(data.birthday),
+                name: data.name,
+                birthday: formatBirthday(data.birthday),
             },
         });
     });

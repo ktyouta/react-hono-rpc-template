@@ -27,7 +27,7 @@ export class FrontUserLoginRepository implements IFrontUserLoginRepository {
       .from(frontUserLoginMaster)
       .where(
         and(
-          eq(frontUserLoginMaster.userName, userName.value),
+          eq(frontUserLoginMaster.name, userName.value),
           eq(frontUserLoginMaster.deleteFlg, FLG.OFF)
         )
       );
@@ -44,7 +44,7 @@ export class FrontUserLoginRepository implements IFrontUserLoginRepository {
       .from(frontUserMaster)
       .where(
         and(
-          eq(frontUserMaster.userId, userId.value),
+          eq(frontUserMaster.id, userId.value),
           eq(frontUserMaster.deleteFlg, FLG.OFF)
         )
       );
@@ -63,6 +63,6 @@ export class FrontUserLoginRepository implements IFrontUserLoginRepository {
         lastLoginDate: now,
         updatedAt: now,
       })
-      .where(eq(frontUserMaster.userId, userId.value));
+      .where(eq(frontUserMaster.id, userId.value));
   }
 }

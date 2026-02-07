@@ -1,7 +1,6 @@
 import { SetLoginUserContext } from '@/app/components/login-user-provider';
 import { paths } from '@/config/paths';
 import { useCreateYearList } from '@/hooks/use-create-year-list';
-import { LoginUserType } from '@/types/login-user-type';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useSignupMutation } from '../api/signup';
@@ -32,9 +31,7 @@ export function useSignup() {
     const postMutation = useSignupMutation({
         // 正常終了後の処理
         onSuccess: (res) => {
-            if (res.data) {
-                setLoginUserInfo(res.data as LoginUserType);
-            }
+            setLoginUserInfo(res.data.user);
             navigate(paths.home.path);
         },
         // 失敗後の処理
@@ -57,8 +54,8 @@ export function useSignup() {
 
         // 登録リクエスト呼び出し
         postMutation.mutate({
-            userName: data.userName,
-            userBirthday: formatBirthday(data.birthday),
+            name: data.name,
+            birthday: formatBirthday(data.birthday),
             password: data.password,
             confirmPassword: data.confirmPassword,
         });

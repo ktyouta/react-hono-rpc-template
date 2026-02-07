@@ -62,9 +62,9 @@ describe("CreateFrontUserUseCase", () => {
     let useCase: CreateFrontUserUseCase;
 
     const validRequestBody = {
-        userName: "testuser",
+        name: "testuser",
         password: "password123",
-        userBirthday: "19900101",
+        birthday: "19900101",
         confirmPassword: "password123",
     };
 
@@ -82,9 +82,9 @@ describe("CreateFrontUserUseCase", () => {
             mockRepository.findByUserName = vi.fn().mockResolvedValue([]);
             mockRepository.insertFrontLoginUser = vi.fn().mockResolvedValue(undefined);
             mockRepository.insertFrontUser = vi.fn().mockResolvedValue({
-                userId: 1,
-                userName: "testuser",
-                userBirthday: "19900101",
+                id: 1,
+                name: "testuser",
+                birthday: "19900101",
             });
 
             // Act
@@ -103,7 +103,7 @@ describe("CreateFrontUserUseCase", () => {
         it("異常系: ユーザー名が重複している場合はエラーを返す", async () => {
             // Arrange
             const mockRepository = (useCase as any).repository;
-            mockRepository.findByUserName = vi.fn().mockResolvedValue([{ userId: 1 }]);
+            mockRepository.findByUserName = vi.fn().mockResolvedValue([{ id: 1 }]);
 
             // Act
             const result = await useCase.execute(validRequestBody);

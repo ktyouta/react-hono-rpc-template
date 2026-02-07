@@ -1,7 +1,6 @@
-import { LoginUserType } from "@/types/login-user-type";
 import { createCtx } from "@/utils/create-ctx";
 import { ReactNode, useEffect, useState } from "react";
-import { veryfy } from "../api/veryfy";
+import { LoginUserType, verify } from "../api/verify";
 
 // ログインユーザー情報
 export const LoginUserContext = createCtx<LoginUserType | null>();
@@ -20,16 +19,15 @@ export function LoginUserProvider(props: PropsType) {
     const [loginUser, setLoginUser] = useState<LoginUserType | null>(null);
 
     // 認証チェック
-    const { data, isSuccess } = veryfy({
-        select: (res) => res,
-    });
+    const { data, isSuccess } = verify();
 
     useEffect(() => {
-        if (data && isSuccess && !loginUser) {
-            // バックエンドのレスポンス型からログインユーザー情報を取得
-            if (data.data) {
-                setLoginUser(data.data as LoginUserType);
-            }
+        if (data && !loginUser) {
+            setLoginUser({
+                id: data.data.userInfo.id,
+                name: data.data.userInfo.name,
+                birthday: data.data.userInfo.birthday,
+            });
         }
     }, [data, isSuccess, loginUser]);
 

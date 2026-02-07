@@ -2,7 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../../constant";
 import type { AppEnv } from "../../../../type";
-import { ApiResponse, formatZodErrors } from "../../../../util";
+import { formatZodErrors } from "../../../../util";
 import { UpdateSampleRepository } from "../repository";
 import { UpdateSampleParamSchema, UpdateSampleSchema } from "../schema";
 import { UpdateSampleService } from "../service";
@@ -16,12 +16,12 @@ const updateSample = new Hono<AppEnv>().put(
   `${API_ENDPOINT.SAMPLE}/:id`,
   zValidator("param", UpdateSampleParamSchema, (result, c) => {
     if (!result.success) {
-      return ApiResponse.create(c, HTTP_STATUS.BAD_REQUEST, "パラメータが不正です。", formatZodErrors(result.error));
+      return c.json({ message: "パラメータが不正です。", data: formatZodErrors(result.error) }, HTTP_STATUS.BAD_REQUEST);
     }
   }),
   zValidator("json", UpdateSampleSchema, (result, c) => {
     if (!result.success) {
-      return ApiResponse.create(c, HTTP_STATUS.UNPROCESSABLE_ENTITY, "バリデーションエラー", formatZodErrors(result.error));
+      return c.json({ message: "バリデーションエラー", data: formatZodErrors(result.error) }, HTTP_STATUS.UNPROCESSABLE_ENTITY);
     }
   }),
   async (c) => {
@@ -35,10 +35,10 @@ const updateSample = new Hono<AppEnv>().put(
     const result = await useCase.execute(Number(id), body);
 
     if (!result.success) {
-      return ApiResponse.create(c, result.status, result.message);
+      return c.json({ message: result.message }, result.status);
     }
 
-    return ApiResponse.create(c, result.status, result.message, result.data);
+    return c.json({ message: result.message, data: result.data }, result.status);
   }
 );
 

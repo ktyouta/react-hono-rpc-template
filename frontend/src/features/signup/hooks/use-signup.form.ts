@@ -8,7 +8,7 @@ export function useSignupForm() {
     return useForm<SignupRequestType>({
         resolver: zodResolver(SignupRequestSchema),
         defaultValues: {
-            userName: ``,
+            name: ``,
             birthday: {
                 year: ``,
                 month: ``,

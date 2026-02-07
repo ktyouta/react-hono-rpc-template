@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useUpdatePasswordForm } from './use-update-password.form';
 
 // TODO: バックエンドにパスワード更新専用のエンドポイントが存在しない
-// UpdateFrontUserSchema には userName と userBirthday のみで、password フィールドがない
+// UpdateFrontUserSchema には name と birthday のみで、password フィールドがない
 // パスワード更新機能を実装する場合は、バックエンドにエンドポイントを追加する必要がある
 
 export function useUpdatePassword() {

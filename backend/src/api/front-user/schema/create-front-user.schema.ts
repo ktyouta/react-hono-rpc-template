@@ -5,11 +5,11 @@ import { z } from "zod";
  */
 export const CreateFrontUserSchema = z
   .object({
-    userName: z
+    name: z
       .string()
       .min(3, "ユーザー名は3文字以上で入力してください")
       .max(30, "ユーザー名は30文字以内で入力してください"),
-    userBirthday: z
+    birthday: z
       .string()
       .regex(
         /^[0-9]{4}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])$/,

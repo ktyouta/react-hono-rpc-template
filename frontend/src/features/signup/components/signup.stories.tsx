@@ -15,7 +15,7 @@ const meta: Meta<typeof Signup> = {
             { label: '1999', value: '1999' },
             { label: '1998', value: '1998' },
         ],
-        clickBack: () => {
+        back: () => {
             alert("戻るボタンが押されました");
         },
         isLoading: false,

@@ -5,7 +5,7 @@ import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
 import { RefreshToken } from "../../../domain";
 import { userOperationGuardMiddleware } from "../../../middleware";
 import type { AppEnv } from "../../../type";
-import { ApiResponse, formatZodErrors } from "../../../util";
+import { formatZodErrors } from "../../../util";
 import { CreateFrontUserSchema } from "../schema";
 import { CreateFrontUserUseCase } from "../usecase";
 
@@ -18,7 +18,7 @@ const createFrontUser = new Hono<AppEnv>().post(
     userOperationGuardMiddleware,
     zValidator("json", CreateFrontUserSchema, (result, c) => {
         if (!result.success) {
-            return ApiResponse.create(c, HTTP_STATUS.UNPROCESSABLE_ENTITY, "バリデーションエラー", formatZodErrors(result.error));
+            return c.json({ message: "バリデーションエラー", data: formatZodErrors(result.error) }, HTTP_STATUS.UNPROCESSABLE_ENTITY);
         }
     }),
     async (c) => {
@@ -29,13 +29,13 @@ const createFrontUser = new Hono<AppEnv>().post(
         const result = await useCase.execute(body);
 
         if (!result.success) {
-            return ApiResponse.create(c, result.status, result.message);
+            return c.json({ message: result.message }, result.status);
         }
 
         // リフレッシュトークンをCookieに設定
         setCookie(c, RefreshToken.COOKIE_KEY, result.data.refreshToken, RefreshToken.COOKIE_SET_OPTION);
 
-        return ApiResponse.create(c, result.status, result.message, result.data.response);
+        return c.json({ message: result.message, data: result.data.response }, result.status);
     }
 );
 

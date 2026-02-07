@@ -52,20 +52,20 @@ describe("FrontUserLoginUseCase", () => {
     let useCase: FrontUserLoginUseCase;
 
     const validRequestBody = {
-        userName: "testuser",
+        name: "testuser",
         password: "password123",
     };
 
     const mockLoginInfo = {
-        userId: 1,
+        id: 1,
         salt: "test-salt",
         password: "hashed-password",
     };
 
     const mockUserInfo = {
-        userId: 1,
-        userName: "testuser",
-        userBirthday: "19900101",
+        id: 1,
+        name: "testuser",
+        birthday: "19900101",
     };
 
     beforeEach(() => {

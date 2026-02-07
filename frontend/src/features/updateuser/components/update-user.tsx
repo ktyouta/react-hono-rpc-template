@@ -13,7 +13,7 @@ type PropsType = {
     back: () => void,
     isLoading: boolean,
     register: UseFormRegister<{
-        userName: string;
+        name: string;
         birthday: {
             year: string;
             month: string;
@@ -21,7 +21,7 @@ type PropsType = {
         };
     }>,
     errors: FieldErrors<{
-        userName: string;
+        name: string;
         birthday: {
             year: string;
             month: string;
@@ -29,7 +29,7 @@ type PropsType = {
         };
     }>,
     watch: UseFormWatch<{
-        userName: string;
+        name: string;
         birthday: {
             year: string;
             month: string;
@@ -74,15 +74,15 @@ export function UpdateUser(props: PropsType) {
                             ユーザー名（3〜30文字）
                         </label>
                         <Textbox
-                            className={`w-full h-12 px-4 rounded-lg border-gray-300 ${errors.userName ? 'border-red-500 focus:ring-red-500' : ''}`}
+                            className={`w-full h-12 px-4 rounded-lg border-gray-300 ${errors.name ? 'border-red-500 focus:ring-red-500' : ''}`}
                             type="text"
                             maxLength={30}
                             placeholder="UserName"
                             autoComplete="off"
-                            registration={register("userName")}
+                            registration={register("name")}
                         />
-                        {errors.userName?.message && (
-                            <p className="text-red-500 text-xs mt-2">{errors.userName.message}</p>
+                        {errors.name?.message && (
+                            <p className="text-red-500 text-xs mt-2">{errors.name.message}</p>
                         )}
                     </div>
                     <div>

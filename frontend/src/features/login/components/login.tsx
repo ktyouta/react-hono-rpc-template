@@ -5,11 +5,11 @@ type PropsType = {
     errMessage: string,
     isLoading: boolean,
     register: UseFormRegister<{
-        userName: string;
+        name: string;
         password: string;
     }>,
     errors: FieldErrors<{
-        userName: string;
+        name: string;
         password: string;
     }>,
     clickLogin: (e?: React.BaseSyntheticEvent<object, any, any> | undefined) => Promise<void>,
@@ -50,12 +50,12 @@ export function Login(props: PropsType) {
                             ユーザー名
                         </label>
                         <Textbox
-                            className={`w-full h-12 px-4 rounded-lg border-gray-300 ${errors.userName ? 'border-red-500 focus:ring-red-500' : ''}`}
+                            className={`w-full h-12 px-4 rounded-lg border-gray-300 ${errors.name ? 'border-red-500 focus:ring-red-500' : ''}`}
                             autoComplete="off"
-                            registration={register("userName")}
+                            registration={register("name")}
                         />
-                        {errors.userName?.message && (
-                            <p className="text-red-500 text-xs mt-2">{errors.userName.message}</p>
+                        {errors.name?.message && (
+                            <p className="text-red-500 text-xs mt-2">{errors.name.message}</p>
                         )}
                     </div>
                     {/* パスワード */}

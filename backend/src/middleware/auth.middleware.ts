@@ -4,7 +4,6 @@ import { HTTP_STATUS } from "../constant";
 import { AccessToken } from "../domain";
 import { Header } from "../domain/header";
 import type { AppEnv } from "../type";
-import { ApiResponse } from "../util";
 
 
 /**
@@ -26,21 +25,21 @@ export const authMiddleware: MiddlewareHandler<AppEnv> = async (c, next) => {
         const userInfo = await service.getUserById(userId);
 
         if (!userInfo) {
-            return ApiResponse.create(c, HTTP_STATUS.UNAUTHORIZED, "認証エラー");
+            return c.json({ message: "認証エラー" }, HTTP_STATUS.UNAUTHORIZED);
         }
 
         c.set("user", {
             userId,
             info: {
-                userId: userInfo.userId,
-                userName: userInfo.userName,
-                birthday: userInfo.userBirthday,
+                id: userInfo.id,
+                name: userInfo.name,
+                birthday: userInfo.birthday,
             },
         });
 
         await next();
     } catch (err) {
         console.error("Auth error:", err);
-        return ApiResponse.create(c, HTTP_STATUS.UNAUTHORIZED, "認証エラー");
+        return c.json({ message: "認証エラー" }, HTTP_STATUS.UNAUTHORIZED);
     }
 };

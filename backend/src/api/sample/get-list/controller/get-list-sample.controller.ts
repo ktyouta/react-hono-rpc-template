@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import { API_ENDPOINT } from "../../../../constant";
 import type { AppEnv } from "../../../../type";
-import { ApiResponse } from "../../../../util";
 import { GetListSampleRepository } from "../repository";
 import { GetListSampleService } from "../service";
 import { GetListSampleUseCase } from "../usecase";
@@ -18,7 +17,7 @@ const getListSample = new Hono<AppEnv>().get(API_ENDPOINT.SAMPLE, async (c) => {
 
   const result = await useCase.execute();
 
-  return ApiResponse.create(c, result.status, result.message, result.data);
+  return c.json({ message: result.message, data: result.data }, result.status);
 });
 
 export { getListSample };

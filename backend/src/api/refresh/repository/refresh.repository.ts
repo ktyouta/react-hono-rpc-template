@@ -21,7 +21,7 @@ export class RefreshRepository implements IRefreshRepository {
       .from(frontUserMaster)
       .where(
         and(
-          eq(frontUserMaster.userId, userId.value),
+          eq(frontUserMaster.id, userId.value),
           eq(frontUserMaster.deleteFlg, FLG.OFF)
         )
       );

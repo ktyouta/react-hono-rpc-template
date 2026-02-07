@@ -1,4 +1,4 @@
-import { ContentfulStatusCode } from "hono/utils/http-status";
+import type { FrontUserInfoType } from "../../../type";
 import { HTTP_STATUS } from "../../../constant";
 import { AccessToken, RefreshToken } from "../../../domain";
 import type { Database } from "../../../infrastructure/db";
@@ -9,15 +9,16 @@ import { VerifyService } from "../service/verify.service";
 type Output =
     | {
         success: true;
-        status: ContentfulStatusCode;
+        status: 200;
         message: string;
         data: {
             accessToken: string;
+            userInfo: FrontUserInfoType;
         };
     }
     | {
         success: false;
-        status: ContentfulStatusCode;
+        status: 401;
         message: string;
     };
 
@@ -70,6 +71,11 @@ export class VerifyUseCase {
             message: "認証成功",
             data: {
                 accessToken: accessToken.token,
+                userInfo: {
+                    id: userInfo.id,
+                    name: userInfo.name,
+                    birthday: userInfo.birthday,
+                },
             },
         };
     }

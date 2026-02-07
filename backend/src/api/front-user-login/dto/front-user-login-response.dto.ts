@@ -6,8 +6,8 @@ import type { FrontUserMaster } from "../../../infrastructure/db";
 export type FrontUserLoginResponseType = {
   accessToken: string;
   user: {
-    userId: number;
-    userName: string;
+    id: number;
+    name: string;
     birthday: string;
   };
 };
@@ -22,9 +22,9 @@ export class FrontUserLoginResponseDto {
     this._value = {
       accessToken,
       user: {
-        userId: userInfo.userId,
-        userName: userInfo.userName,
-        birthday: userInfo.userBirthday,
+        id: userInfo.id,
+        name: userInfo.name,
+        birthday: userInfo.birthday,
       },
     };
   }

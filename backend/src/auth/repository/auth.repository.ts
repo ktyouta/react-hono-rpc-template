@@ -21,7 +21,7 @@ export class AuthRepository implements IAuthRepository {
       .from(frontUserMaster)
       .where(
         and(
-          eq(frontUserMaster.userId, userId.value),
+          eq(frontUserMaster.id, userId.value),
           eq(frontUserMaster.deleteFlg, FLG.OFF)
         )
       );

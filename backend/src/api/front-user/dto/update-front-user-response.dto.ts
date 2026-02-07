@@ -3,8 +3,8 @@
  */
 export type UpdateFrontUserResponseType = {
   user: {
-    userId: number;
-    userName: string;
+    id: number;
+    name: string;
     birthday: string;
   };
 };
@@ -18,8 +18,8 @@ export class UpdateFrontUserResponseDto {
   constructor(userId: number, userName: string, birthday: string) {
     this._value = {
       user: {
-        userId,
-        userName,
+        id: userId,
+        name: userName,
         birthday,
       },
     };

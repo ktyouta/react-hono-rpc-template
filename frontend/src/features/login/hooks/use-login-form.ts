@@ -7,7 +7,7 @@ export function useLoginForm() {
     return useForm<LoginRequestType>({
         resolver: zodResolver(LoginRequestSchema),
         defaultValues: {
-            userName: ``,
+            name: ``,
             password: ``,
         },
         mode: "onSubmit",

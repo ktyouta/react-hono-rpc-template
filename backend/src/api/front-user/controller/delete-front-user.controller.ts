@@ -5,7 +5,7 @@ import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
 import { FrontUserId, RefreshToken } from "../../../domain";
 import { authMiddleware, userOperationGuardMiddleware } from "../../../middleware";
 import type { AppEnv } from "../../../type";
-import { ApiResponse, formatZodErrors } from "../../../util";
+import { formatZodErrors } from "../../../util";
 import { UserIdParamSchema } from "../schema";
 import { DeleteFrontUserUseCase } from "../usecase";
 
@@ -19,7 +19,7 @@ const deleteFrontUser = new Hono<AppEnv>().delete(
     authMiddleware,
     zValidator("param", UserIdParamSchema, (result, c) => {
         if (!result.success) {
-            return ApiResponse.create(c, HTTP_STATUS.BAD_REQUEST, "パラメータが不正です。", formatZodErrors(result.error));
+            return c.json({ message: "パラメータが不正です。", data: formatZodErrors(result.error) }, HTTP_STATUS.BAD_REQUEST);
         }
     }),
     async (c) => {
@@ -30,7 +30,7 @@ const deleteFrontUser = new Hono<AppEnv>().delete(
         const result = await useCase.execute(FrontUserId.of(Number(userId)));
 
         if (!result.success) {
-            return ApiResponse.create(c, result.status, result.message);
+            return c.json({ message: result.message }, result.status);
         }
 
         // リフレッシュトークンCookieをクリア

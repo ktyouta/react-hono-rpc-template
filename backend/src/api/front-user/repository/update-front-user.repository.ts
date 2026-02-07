@@ -25,8 +25,8 @@ export class UpdateFrontUserRepository implements IUpdateFrontUserRepository {
       .from(frontUserMaster)
       .where(
         and(
-          eq(frontUserMaster.userName, userName.value),
-          ne(frontUserMaster.userId, userId.value),
+          eq(frontUserMaster.name, userName.value),
+          ne(frontUserMaster.id, userId.value),
           eq(frontUserMaster.deleteFlg, FLG.OFF)
         )
       );
@@ -45,13 +45,13 @@ export class UpdateFrontUserRepository implements IUpdateFrontUserRepository {
     const result = await this.db
       .update(frontUserMaster)
       .set({
-        userName,
-        userBirthday,
+        name: userName,
+        birthday: userBirthday,
         updatedAt: now,
       })
       .where(
         and(
-          eq(frontUserMaster.userId, userId.value),
+          eq(frontUserMaster.id, userId.value),
           eq(frontUserMaster.deleteFlg, FLG.OFF)
         )
       )
@@ -70,12 +70,12 @@ export class UpdateFrontUserRepository implements IUpdateFrontUserRepository {
     await this.db
       .update(frontUserLoginMaster)
       .set({
-        userName,
+        name: userName,
         updatedAt: now,
       })
       .where(
         and(
-          eq(frontUserLoginMaster.userId, userId.value),
+          eq(frontUserLoginMaster.id, userId.value),
           eq(frontUserLoginMaster.deleteFlg, FLG.OFF)
         )
       );

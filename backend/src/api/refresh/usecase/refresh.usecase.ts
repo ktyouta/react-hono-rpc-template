@@ -1,4 +1,3 @@
-import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { HTTP_STATUS } from "../../../constant";
 import { AccessToken, RefreshToken } from "../../../domain";
 import type { Database } from "../../../infrastructure/db";
@@ -9,7 +8,7 @@ import { RefreshService } from "../service";
 type Output =
     | {
         success: true;
-        status: ContentfulStatusCode;
+        status: 200;
         message: string;
         data: {
             accessToken: string;
@@ -18,7 +17,7 @@ type Output =
     }
     | {
         success: false;
-        status: ContentfulStatusCode;
+        status: 401;
         message: string;
     };
 

@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 /**
  * サンプルテーブルスキーマ
@@ -19,9 +19,9 @@ export type NewSample = typeof sample.$inferInsert;
  * フロントユーザーマスタ
  */
 export const frontUserMaster = sqliteTable("front_user_master", {
-  userId: integer("user_id").primaryKey(),
-  userName: text("user_name").notNull().unique(),
-  userBirthday: text("user_birthday").notNull(),
+  id: integer("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  birthday: text("birthday").notNull(),
   lastLoginDate: text("last_login_date"),
   deleteFlg: text("delete_flg").notNull().default("0"),
   createdAt: text("created_at").notNull(),
@@ -35,8 +35,8 @@ export type NewFrontUserMaster = typeof frontUserMaster.$inferInsert;
  * フロントユーザーログインマスタ
  */
 export const frontUserLoginMaster = sqliteTable("front_user_login_master", {
-  userId: integer("user_id").primaryKey(),
-  userName: text("user_name").notNull().unique(),
+  id: integer("id").primaryKey(),
+  name: text("name").notNull().unique(),
   password: text("password").notNull(),
   salt: text("salt").notNull(),
   deleteFlg: text("delete_flg").notNull().default("0"),

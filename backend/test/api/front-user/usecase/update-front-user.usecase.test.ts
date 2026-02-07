@@ -35,8 +35,8 @@ describe("UpdateFrontUserUseCase", () => {
 
     const validUserId = FrontUserId.of(1);
     const validRequestBody = {
-        userName: "updateduser",
-        userBirthday: "19900101",
+        name: "updateduser",
+        birthday: "19900101",
     };
 
     beforeEach(() => {
@@ -53,9 +53,9 @@ describe("UpdateFrontUserUseCase", () => {
             mockRepository.checkUserNameExists = vi.fn().mockResolvedValue(false);
             mockRepository.updateFrontLoginUser = vi.fn().mockResolvedValue(undefined);
             mockRepository.updateFrontUser = vi.fn().mockResolvedValue({
-                userId: 1,
-                userName: "updateduser",
-                userBirthday: "19900101",
+                id: 1,
+                name: "updateduser",
+                birthday: "19900101",
             });
 
             // Act

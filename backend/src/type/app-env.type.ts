@@ -1,12 +1,12 @@
-import type { Database } from "../infrastructure/db";
 import type { FrontUserId } from "../domain";
+import type { Database } from "../infrastructure/db";
 
 /**
  * フロントユーザー情報型
  */
 export type FrontUserInfoType = {
-  userId: number;
-  userName: string;
+  id: number;
+  name: string;
   birthday: string;
 };
 

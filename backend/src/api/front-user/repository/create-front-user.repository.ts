@@ -22,7 +22,7 @@ export class CreateFrontUserRepository implements ICreateFrontUserRepository {
       .from(frontUserMaster)
       .where(
         and(
-          eq(frontUserMaster.userName, userName.value),
+          eq(frontUserMaster.name, userName.value),
           eq(frontUserMaster.deleteFlg, FLG.OFF)
         )
       );
@@ -37,9 +37,9 @@ export class CreateFrontUserRepository implements ICreateFrontUserRepository {
     const result = await this.db
       .insert(frontUserMaster)
       .values({
-        userId: entity.frontUserId,
-        userName: entity.frontUserName,
-        userBirthday: entity.frontUserBirthday,
+        id: entity.frontUserId,
+        name: entity.frontUserName,
+        birthday: entity.frontUserBirthday,
         deleteFlg: FLG.OFF,
         createdAt: now,
         updatedAt: now,
@@ -55,8 +55,8 @@ export class CreateFrontUserRepository implements ICreateFrontUserRepository {
   async insertFrontLoginUser(entity: FrontUserLoginEntity): Promise<void> {
     const now = new Date().toISOString();
     await this.db.insert(frontUserLoginMaster).values({
-      userId: entity.frontUserId,
-      userName: entity.frontUserName,
+      id: entity.frontUserId,
+      name: entity.frontUserName,
       password: entity.frontUserPassword,
       salt: entity.salt,
       deleteFlg: FLG.OFF,

@@ -6,8 +6,8 @@ import { FrontUserEntity } from "../entity";
 export type CreateFrontUserResponseType = {
   accessToken: string;
   user: {
-    userId: number;
-    userName: string;
+    id: number;
+    name: string;
     birthday: string;
   };
 };
@@ -22,8 +22,8 @@ export class CreateFrontUserResponseDto {
     this._value = {
       accessToken,
       user: {
-        userId: entity.frontUserId,
-        userName: entity.frontUserName,
+        id: entity.frontUserId,
+        name: entity.frontUserName,
         birthday: entity.frontUserBirthday,
       },
     };

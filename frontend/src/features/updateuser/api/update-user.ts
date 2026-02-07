@@ -4,11 +4,11 @@ import type { InferResponseType, InferRequestType } from 'hono/client';
 
 const endpoint = rpc.api.v1.frontuser[':userId'].$patch;
 
-type ResponseType = InferResponseType<typeof endpoint>;
+type SuccessResponseType = InferResponseType<typeof endpoint, 200>;
 type RequestType = InferRequestType<typeof endpoint>;
 
 type PropsType = {
-    onSuccess: (data: ResponseType) => void;
+    onSuccess: (data: SuccessResponseType) => void;
     onError: (message: string) => void;
 };
 
@@ -25,7 +25,9 @@ export function useUpdateUserMutation(props: PropsType) {
             }
             return res.json();
         },
-        onSuccess: props.onSuccess,
+        onSuccess: (data) => {
+            props.onSuccess(data);
+        },
         onError: (error: Error) => {
             props.onError(error.message);
         },

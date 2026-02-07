@@ -2,7 +2,7 @@ import { z } from "zod";
 
 
 export const SignupRequestSchema = z.object({
-    userName: z.string()
+    name: z.string()
         .nonempty("ユーザー名を入力してください")
         .min(3, "ユーザー名は3文字以上で入力してください")
         .max(30, "ユーザー名は30文字以内で入力してください"),

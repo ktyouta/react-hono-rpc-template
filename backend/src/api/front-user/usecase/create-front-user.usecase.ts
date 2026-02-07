@@ -1,4 +1,3 @@
-import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { envConfig } from "../../../config";
 import { HTTP_STATUS } from "../../../constant";
 import {
@@ -22,7 +21,7 @@ import type { CreateFrontUserSchemaType } from "../schema";
 type Output =
     | {
         success: true;
-        status: ContentfulStatusCode;
+        status: 201;
         message: string;
         data: {
             response: CreateFrontUserResponseType;
@@ -31,7 +30,7 @@ type Output =
     }
     | {
         success: false;
-        status: ContentfulStatusCode;
+        status: 422;
         message: string;
     };
 
@@ -48,8 +47,8 @@ export class CreateFrontUserUseCase {
 
     async execute(requestBody: CreateFrontUserSchemaType): Promise<Output> {
         // ドメインオブジェクトを生成
-        const userName = new FrontUserName(requestBody.userName);
-        const userBirthday = new FrontUserBirthday(requestBody.userBirthday);
+        const userName = new FrontUserName(requestBody.name);
+        const userBirthday = new FrontUserBirthday(requestBody.birthday);
         const salt = FrontUserSalt.generate();
         const pepper = new Pepper(envConfig.pepper);
         const userPassword = await FrontUserPassword.hash(
