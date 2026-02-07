@@ -1,6 +1,7 @@
 import { SetLoginUserContext } from '@/app/components/login-user-provider';
 import { paths } from '@/config/paths';
 import { useCreateYearList } from '@/hooks/use-create-year-list';
+import { updateAccessToken } from '@/stores/access-token-store';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useSignupMutation } from '../api/signup';
@@ -31,7 +32,9 @@ export function useSignup() {
     const postMutation = useSignupMutation({
         // 正常終了後の処理
         onSuccess: (res) => {
-            setLoginUserInfo(res.data.user);
+            const data = res.data;
+            setLoginUserInfo(data.user);
+            updateAccessToken(data.accessToken);
             navigate(paths.home.path);
         },
         // 失敗後の処理
