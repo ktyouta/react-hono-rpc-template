@@ -10,7 +10,8 @@ export const userOperationGuardMiddleware: MiddlewareHandler<AppEnv> = async (
   c,
   next
 ) => {
-  const allowUserOperation = c.env.ALLOW_USER_OPERATION === "true";
+  const config = c.get('envConfig');
+  const allowUserOperation = config.allowUserOperation;
 
   if (!allowUserOperation) {
     return c.json({ message: "この機能は現在の環境では無効化されています。" }, HTTP_STATUS.FORBIDDEN);

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { useForm } from 'react-hook-form';
 import { UpdatePassword } from './update-password';
 
 const meta: Meta<typeof UpdatePassword> = {
@@ -7,26 +8,32 @@ const meta: Meta<typeof UpdatePassword> = {
     parameters: {
         layout: 'fullscreen',
     },
-    args: {
-        errMessage: '',
-        back: () => {
-            alert("戻るボタンが押されました");
-        },
-        isLoading: false,
-        register: (() => ({
-            name: 'name',
-            onChange: async () => { },
-            onBlur: async () => { },
-            ref: () => { },
-        })) as any,
-        errors: {},
-        handleConfirm: async () => {
-            alert("登録ボタンが押されました");
-        },
-    },
 };
 
 export default meta;
 type Story = StoryObj<typeof UpdatePassword>;
 
-export const Default: Story = {};
+export const Default: Story = {
+    render: () => {
+        const { register, formState: { errors } } = useForm<{
+            password: string;
+            confirmPassword: string;
+        }>({
+            defaultValues: { password: '', confirmPassword: '' },
+        });
+        return (
+            <UpdatePassword
+                errMessage=""
+                back={() => {
+                    alert("戻るボタンが押されました");
+                }}
+                isLoading={false}
+                register={register}
+                errors={errors}
+                handleConfirm={async () => {
+                    alert("登録ボタンが押されました");
+                }}
+            />
+        );
+    },
+};

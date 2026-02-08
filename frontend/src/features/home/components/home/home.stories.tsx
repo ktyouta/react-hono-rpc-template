@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { BodyContainer } from '../body/body-container'
-import { FooterContainer } from '../footer/footer-container'
-import { HeaderContainer } from '../header/header-container'
+import { Footer } from '../footer/footer'
+import { Header } from '../header/header'
+import { Body } from '../body/body'
 import { Home } from './home'
 
 const meta: Meta<typeof Home> = {
@@ -17,9 +17,17 @@ export const Default: Story = {
     render: () => {
         return (
             <Home>
-                <HeaderContainer />
-                <BodyContainer />
-                <FooterContainer />
+                <Header message="Header message" />
+                <Body
+                    count={0}
+                    click={() => {}}
+                    healthStatus="healthy"
+                    healthTimestamp="2025-01-01T00:00:00.000Z"
+                    isHealthLoading={false}
+                    isHealthError={false}
+                    refetchHealth={() => {}}
+                />
+                <Footer message="footer message" />
             </Home>
         )
     },

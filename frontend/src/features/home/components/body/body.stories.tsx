@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { useBody } from '../../hooks/use-body'
 import { Body } from './body'
 
 const meta: Meta<typeof Body> = {
@@ -10,18 +9,38 @@ const meta: Meta<typeof Body> = {
 export default meta
 type Story = StoryObj<typeof Body>
 
-
-const BodyWithState = () => {
-
-    const props = useBody();
-
-    return (
-        <Body
-            {...props}
-        />
-    )
+export const Default: Story = {
+    args: {
+        count: 0,
+        click: () => {},
+        healthStatus: 'healthy',
+        healthTimestamp: '2025-01-01T00:00:00.000Z',
+        isHealthLoading: false,
+        isHealthError: false,
+        refetchHealth: () => {},
+    },
 }
 
-export const Default: Story = {
-    render: () => <BodyWithState />,
+export const Loading: Story = {
+    args: {
+        count: 0,
+        click: () => {},
+        healthStatus: null,
+        healthTimestamp: null,
+        isHealthLoading: true,
+        isHealthError: false,
+        refetchHealth: () => {},
+    },
+}
+
+export const Error: Story = {
+    args: {
+        count: 0,
+        click: () => {},
+        healthStatus: null,
+        healthTimestamp: null,
+        isHealthLoading: false,
+        isHealthError: true,
+        refetchHealth: () => {},
+    },
 }

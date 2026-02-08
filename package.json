@@ -5,6 +5,13 @@
     "frontend",
     "backend"
   ],
+  "scripts": {
+    "dev:frontend": "npm run dev -w frontend",
+    "dev:backend": "npm run dev -w backend",
+    "test:frontend": "npm run test -w frontend",
+    "test:backend": "npm run test -w backend",
+    "test": "npm run test:frontend && npm run test:backend"
+  },
   "devDependencies": {
     "hono": "4.11.3"
   }

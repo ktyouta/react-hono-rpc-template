@@ -31,8 +31,9 @@ export type EnvConfig = {
     readonly refreshTokenJwtKey: string;
     readonly refreshTokenExpires: string;
     readonly pepper: string;
-    readonly corsOrigin: string[];
+    readonly corsOrigin: string[] | string;
     readonly isProduction: boolean;
+    readonly allowUserOperation: boolean;
 };
 
 /**
@@ -76,5 +77,6 @@ export function createEnvConfig(env: Partial<EnvBindings>): EnvConfig {
         pepper: requireEnv(env.PEPPER, 'PEPPER'),
         corsOrigin: parseCorsOrigin(env.CORS_ORIGIN),
         isProduction: env.ENV_PRODUCTION === 'true',
+        allowUserOperation: env.ALLOW_USER_OPERATION === 'true',
     };
 }

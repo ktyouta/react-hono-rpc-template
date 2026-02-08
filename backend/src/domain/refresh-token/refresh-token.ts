@@ -192,12 +192,12 @@ export class RefreshToken {
         const expires = this._config.refreshTokenExpires;
         const decode = await this.verify();
 
-        if (!decode.iat) {
+        if (typeof decode.iat !== 'number') {
             throw new Error(`iatが設定されていません。`);
         }
 
         const nowMs = Date.now();
-        const iatMs = (decode.iat as number) * 1000;
+        const iatMs = decode.iat * 1000;
 
         return nowMs - iatMs > parseDuration(expires);
     }
