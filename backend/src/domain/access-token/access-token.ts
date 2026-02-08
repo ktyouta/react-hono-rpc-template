@@ -1,5 +1,5 @@
 import { sign, verify } from "hono/jwt";
-import { envConfig } from "../../config";
+import type { EnvConfig } from "../../config";
 import { parseDuration } from "../../util";
 import { FrontUserId } from "../front-user-id";
 import { Header } from "../header/header";
@@ -10,21 +10,25 @@ export class AccessToken {
 
     // トークン
     private readonly _value: string;
+    // 環境設定
+    private readonly _config: EnvConfig;
     // ヘッダーのキー
     static readonly HEADER_KEY: string = `Authorization`;
     // 認証スキーム
     static readonly SCHEME: string = `Bearer`;
 
-    private constructor(token: string) {
+    private constructor(token: string, config: EnvConfig) {
         this._value = token;
+        this._config = config;
     }
 
     /**
      * トークンを取得
      * @param header
+     * @param config
      * @returns
      */
-    static get(header: Header) {
+    static get(header: Header, config: EnvConfig) {
 
         const authHeader = header.get(AccessToken.HEADER_KEY) || ``;
         const [scheme, token] = authHeader.split(` `);
@@ -35,18 +39,19 @@ export class AccessToken {
             throw new AccessTokenError(`Authorizationヘッダの形式が不正です。`);
         }
 
-        return new AccessToken(accessToken);
+        return new AccessToken(accessToken, config);
     }
 
     /**
      * トークンの発行
      * @param frontUserId
+     * @param config
      * @returns
      */
-    static async create(frontUserId: FrontUserId) {
+    static async create(frontUserId: FrontUserId, config: EnvConfig) {
 
-        const jwtKey = envConfig.accessTokenJwtKey;
-        const expires = envConfig.accessTokenExpires;
+        const jwtKey = config.accessTokenJwtKey;
+        const expires = config.accessTokenExpires;
 
         if (!jwtKey) {
             throw Error(`設定ファイルにjwt(アクセス)の秘密鍵が設定されていません。`);
@@ -73,7 +78,7 @@ export class AccessToken {
 
         const token = await sign(payload, jwtKey);
 
-        return new AccessToken(token);
+        return new AccessToken(token, config);
     }
 
     /**
@@ -82,7 +87,7 @@ export class AccessToken {
      */
     private async verify() {
 
-        const jwtKey = envConfig.accessTokenJwtKey;
+        const jwtKey = this._config.accessTokenJwtKey;
 
         try {
 

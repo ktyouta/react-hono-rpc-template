@@ -1,5 +1,5 @@
 import { sign, verify } from "hono/jwt";
-import { envConfig } from "../../config";
+import type { EnvConfig } from "../../config";
 import { parseDuration } from "../../util";
 import { Cookie } from "../cookie";
 import { FrontUserId } from "../front-user-id";
@@ -9,21 +9,25 @@ export class RefreshToken {
 
     // トークン
     private readonly _value: string;
+    // 環境設定
+    private readonly _config: EnvConfig;
     // cookieのキー
     static readonly COOKIE_KEY: string = `refresh_token`;
 
-    private constructor(token: string) {
+    private constructor(token: string, config: EnvConfig) {
         this._value = token;
+        this._config = config;
     }
 
     /**
      * cookieオプション(生成)を取得
+     * @param config
      * @returns
      */
-    static get COOKIE_SET_OPTION() {
+    static getCookieSetOption(config: EnvConfig) {
 
-        const isProduction = envConfig.isProduction;
-        const expires = envConfig.refreshTokenExpires;
+        const isProduction = config.isProduction;
+        const expires = config.refreshTokenExpires;
 
         return {
             httpOnly: true,
@@ -36,11 +40,12 @@ export class RefreshToken {
 
     /**
      * cookieオプション(失効)を取得
+     * @param config
      * @returns
      */
-    static get COOKIE_CLEAR_OPTION() {
+    static getCookieClearOption(config: EnvConfig) {
 
-        const isProduction = envConfig.isProduction;
+        const isProduction = config.isProduction;
 
         return {
             httpOnly: true,
@@ -54,9 +59,10 @@ export class RefreshToken {
     /**
      * トークンを取得
      * @param cookie
+     * @param config
      * @returns
      */
-    static get(cookie: Cookie) {
+    static get(cookie: Cookie, config: EnvConfig) {
 
         const token = cookie.get(RefreshToken.COOKIE_KEY);
 
@@ -64,18 +70,19 @@ export class RefreshToken {
             throw Error(`トークンが存在しません。`);
         }
 
-        return new RefreshToken(token);
+        return new RefreshToken(token, config);
     }
 
     /**
      * トークンの発行
      * @param frontUserId
+     * @param config
      * @returns
      */
-    static async create(frontUserId: FrontUserId) {
+    static async create(frontUserId: FrontUserId, config: EnvConfig) {
 
-        const jwtKey = envConfig.refreshTokenJwtKey;
-        const expires = envConfig.refreshTokenExpires;
+        const jwtKey = config.refreshTokenJwtKey;
+        const expires = config.refreshTokenExpires;
 
         if (!jwtKey) {
             throw Error(`設定ファイルにjwt(リフレッシュ)の秘密鍵が設定されていません。`);
@@ -103,7 +110,7 @@ export class RefreshToken {
 
         const token = await sign(payload, jwtKey);
 
-        return new RefreshToken(token);
+        return new RefreshToken(token, config);
     }
 
     /**
@@ -111,8 +118,8 @@ export class RefreshToken {
      */
     async refresh() {
 
-        const jwtKey = envConfig.refreshTokenJwtKey;
-        const expires = envConfig.refreshTokenExpires;
+        const jwtKey = this._config.refreshTokenJwtKey;
+        const expires = this._config.refreshTokenExpires;
         const decoded = await this.verify();
 
         const now = Math.floor(Date.now() / 1000);
@@ -131,7 +138,7 @@ export class RefreshToken {
 
         const token = await sign(payload, jwtKey);
 
-        return new RefreshToken(token);
+        return new RefreshToken(token, this._config);
     }
 
     /**
@@ -140,7 +147,7 @@ export class RefreshToken {
      */
     private async verify() {
 
-        const jwtKey = envConfig.refreshTokenJwtKey;
+        const jwtKey = this._config.refreshTokenJwtKey;
 
         try {
 
@@ -182,7 +189,7 @@ export class RefreshToken {
      */
     async isAbsoluteExpired() {
 
-        const expires = envConfig.refreshTokenExpires;
+        const expires = this._config.refreshTokenExpires;
         const decode = await this.verify();
 
         if (!decode.iat) {

@@ -2,11 +2,15 @@
   "name": "react-hono-rpc-backend",
   "type": "module",
   "scripts": {
-    "start":"npm run dev",
+    "start": "npm run dev",
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy --minify",
     "test": "vitest",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "wrangler d1 migrations apply hono-rest-template-db --local",
+    "db:migrate:prod": "wrangler d1 migrations apply hono-rest-template-db --env production --remote",
+    "db:seed:local": "wrangler d1 execute hono-rest-template-db --local --file=./seed/seed.sql",
+    "deploy:prod": "wrangler deploy --env production --minify"
   },
   "dependencies": {
     "hono": "^4.11.3",

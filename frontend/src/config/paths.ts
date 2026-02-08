@@ -15,9 +15,9 @@ export const paths = {
         path: '/login',
         getHref: (redirectTo?: string) => `${paths.login.path}${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ``}`,
     },
-    siginup: {
-        path: '/siginup',
-        getHref: (redirectTo?: string) => `${paths.siginup.path}${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ``}`,
+    signup: {
+        path: '/signup',
+        getHref: (redirectTo?: string) => `${paths.signup.path}${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ``}`,
     },
     updateUser: {
         path: '/update-user',

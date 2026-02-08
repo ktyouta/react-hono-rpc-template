@@ -45,7 +45,7 @@ const routerList: { path: string, element: ReactNode }[] = [
         )
     },
     {
-        path: paths.siginup.path,
+        path: paths.signup.path,
         element: (
             <GuestRoute>
                 <SignupContainer />

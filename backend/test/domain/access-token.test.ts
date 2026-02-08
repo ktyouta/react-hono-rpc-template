@@ -1,19 +1,18 @@
-import { describe, it, expect, vi, beforeAll } from "vitest";
+import { describe, it, expect } from "vitest";
+import { AccessToken } from "../../src/domain/access-token/access-token";
 import { FrontUserId } from "../../src/domain";
 import { Header } from "../../src/domain/header/header";
+import type { EnvConfig } from "../../src/config";
 
-// envConfigをモック
-vi.mock("../../src/config", () => ({
-    envConfig: {
-        accessTokenJwtKey: "test-jwt-secret-key-for-access-token",
-        accessTokenExpires: "15m",
-        refreshTokenJwtKey: "test-jwt-secret-key-for-refresh-token",
-        refreshTokenExpires: "7d",
-    },
-}));
-
-// モック後にインポート
-const { AccessToken } = await import("../../src/domain/access-token/access-token");
+const testConfig: EnvConfig = {
+    accessTokenJwtKey: "test-jwt-secret-key-for-access-token",
+    accessTokenExpires: "15m",
+    refreshTokenJwtKey: "test-jwt-secret-key-for-refresh-token",
+    refreshTokenExpires: "7d",
+    pepper: "test-pepper",
+    corsOrigin: ["http://localhost:5173"],
+    isProduction: false,
+};
 
 /**
  * テスト用のモックRequestを作成
@@ -28,7 +27,7 @@ describe("AccessToken", () => {
 
   it("アクセストークンを生成できること", async () => {
     const userId = FrontUserId.of(1);
-    const accessToken = await AccessToken.create(userId);
+    const accessToken = await AccessToken.create(userId, testConfig);
 
     expect(accessToken.token).toBeDefined();
     expect(typeof accessToken.token).toBe("string");
@@ -36,7 +35,7 @@ describe("AccessToken", () => {
 
   it("JWT形式（3つのドット区切り）で生成されること", async () => {
     const userId = FrontUserId.of(1);
-    const accessToken = await AccessToken.create(userId);
+    const accessToken = await AccessToken.create(userId, testConfig);
 
     expect(accessToken.token.split(".")).toHaveLength(3);
   });
@@ -44,8 +43,8 @@ describe("AccessToken", () => {
   it("異なるユーザーIDで異なるトークンが生成されること", async () => {
     const userId1 = FrontUserId.of(1);
     const userId2 = FrontUserId.of(2);
-    const token1 = await AccessToken.create(userId1);
-    const token2 = await AccessToken.create(userId2);
+    const token1 = await AccessToken.create(userId1, testConfig);
+    const token2 = await AccessToken.create(userId2, testConfig);
 
     expect(token1.token).not.toBe(token2.token);
   });
@@ -53,13 +52,13 @@ describe("AccessToken", () => {
   describe("get", () => {
     it("正常なヘッダからトークンを取得できること", async () => {
       const userId = FrontUserId.of(1);
-      const createdToken = await AccessToken.create(userId);
+      const createdToken = await AccessToken.create(userId, testConfig);
 
       const request = createMockRequest({
         Authorization: `Bearer ${createdToken.token}`,
       });
       const header = new Header(request);
-      const extractedToken = AccessToken.get(header);
+      const extractedToken = AccessToken.get(header, testConfig);
 
       expect(extractedToken.token).toBe(createdToken.token);
     });
@@ -68,7 +67,7 @@ describe("AccessToken", () => {
       const request = createMockRequest({});
       const header = new Header(request);
 
-      expect(() => AccessToken.get(header)).toThrow(
+      expect(() => AccessToken.get(header, testConfig)).toThrow(
         "Authorizationヘッダの形式が不正です。"
       );
     });
@@ -79,7 +78,7 @@ describe("AccessToken", () => {
       });
       const header = new Header(request);
 
-      expect(() => AccessToken.get(header)).toThrow(
+      expect(() => AccessToken.get(header, testConfig)).toThrow(
         "Authorizationヘッダの形式が不正です。"
       );
     });
@@ -90,7 +89,7 @@ describe("AccessToken", () => {
       });
       const header = new Header(request);
 
-      expect(() => AccessToken.get(header)).toThrow(
+      expect(() => AccessToken.get(header, testConfig)).toThrow(
         "Authorizationヘッダの形式が不正です。"
       );
     });
@@ -101,7 +100,7 @@ describe("AccessToken", () => {
       });
       const header = new Header(request);
 
-      expect(() => AccessToken.get(header)).toThrow(
+      expect(() => AccessToken.get(header, testConfig)).toThrow(
         "Authorizationヘッダの形式が不正です。"
       );
     });
@@ -110,18 +109,16 @@ describe("AccessToken", () => {
   describe("getPayload", () => {
     it("ユーザーIDを取得できること", async () => {
       const userId = FrontUserId.of(42);
-      const accessToken = await AccessToken.create(userId);
+      const accessToken = await AccessToken.create(userId, testConfig);
 
       const extractedUserId = await accessToken.getPayload();
       expect(extractedUserId.value).toBe(42);
     });
 
     it("不正なキーの場合にエラーになること", async () => {
-      // 不正なJWTトークンを直接作成してテスト
-      // 実装では内部でenvConfigのキーを使用するため、
-      // 不正なトークン文字列でテスト
       const invalidToken = AccessToken.get(
-        new Header(createMockRequest({ Authorization: "Bearer invalid.token.here" }))
+        new Header(createMockRequest({ Authorization: "Bearer invalid.token.here" })),
+        testConfig
       );
 
       await expect(invalidToken.getPayload()).rejects.toThrow();

@@ -1,8 +1,10 @@
 /**
- * 環境変数設定
- * Cloudflare Workers環境ではenv bindingsから取得
+ * 環境変数の生値型（Cloudflare Workers Bindings）
  */
-export type EnvConfig = {
+export type EnvBindings = {
+    // D1データベース
+    DB: D1Database;
+
     // JWT認証キー
     ACCESS_TOKEN_JWT_KEY: string;
     ACCESS_TOKEN_EXPIRES: string;
@@ -20,78 +22,59 @@ export type EnvConfig = {
     ENV_PRODUCTION: string;
 };
 
+/**
+ * パース済み環境変数の型（リクエストスコープで使用）
+ */
+export type EnvConfig = {
+    readonly accessTokenJwtKey: string;
+    readonly accessTokenExpires: string;
+    readonly refreshTokenJwtKey: string;
+    readonly refreshTokenExpires: string;
+    readonly pepper: string;
+    readonly corsOrigin: string[];
+    readonly isProduction: boolean;
+};
 
 /**
- * 環境変数のシングルトン
+ * 必須環境変数のバリデーション
  */
-class EnvConfigSingleton {
-
-    private _accessTokenJwtKey: string = ``;
-    private _accessTokenExpires: string = ``;
-    private _refreshTokenJwtKey: string = ``;
-    private _refreshTokenExpires: string = ``;
-    private _pepper: string = ``;
-    private _corsOrigin: string[] = [];
-    private _isProduction: boolean = false;
-
-    /**
-     * 環境変数を初期化（必須項目が未設定の場合はエラー）
-     */
-    init(env: Partial<EnvConfig>) {
-        this._accessTokenJwtKey = this.requireEnv(env.ACCESS_TOKEN_JWT_KEY, 'ACCESS_TOKEN_JWT_KEY');
-        this._accessTokenExpires = this.requireEnv(env.ACCESS_TOKEN_EXPIRES, 'ACCESS_TOKEN_EXPIRES');
-        this._refreshTokenJwtKey = this.requireEnv(env.REFRESH_TOKEN_JWT_KEY, 'REFRESH_TOKEN_JWT_KEY');
-        this._refreshTokenExpires = this.requireEnv(env.REFRESH_TOKEN_EXPIRES, 'REFRESH_TOKEN_EXPIRES');
-        this._pepper = this.requireEnv(env.PEPPER, 'PEPPER');
-        this._corsOrigin = env.CORS_ORIGIN || [];
-        this._isProduction = env.ENV_PRODUCTION === `true`;
+function requireEnv(value: string | undefined, name: string): string {
+    if (!value) {
+        throw new Error(`必須環境変数が設定されていません: ${name}`);
     }
-
-    private requireEnv(value: string | undefined, name: string): string {
-        if (!value) {
-            throw new Error(`必須環境変数が設定されていません: ${name}`);
-        }
-        return value;
-    }
-
-    get accessTokenJwtKey() {
-        return this._accessTokenJwtKey;
-    }
-
-    get accessTokenExpires() {
-        return this._accessTokenExpires;
-    }
-
-    get refreshTokenJwtKey() {
-        return this._refreshTokenJwtKey;
-    }
-
-    get refreshTokenExpires() {
-        return this._refreshTokenExpires;
-    }
-
-    get pepper() {
-        return this._pepper;
-    }
-
-    get corsOrigin() {
-        return this._corsOrigin;
-    }
-
-    get isProduction() {
-        return this._isProduction;
-    }
+    return value;
 }
 
-export const envConfig = new EnvConfigSingleton();
-
+/**
+ * CORS_ORIGIN をパースする
+ * wrangler vars は実行時に JSON 文字列として渡される場合があるため、
+ * 配列・JSON 文字列・カンマ区切り文字列のいずれにも対応する
+ */
+export function parseCorsOrigin(value: unknown): string[] {
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string') {
+        try {
+            const parsed = JSON.parse(value);
+            return Array.isArray(parsed) ? parsed : [value];
+        } catch {
+            return [value];
+        }
+    }
+    return [];
+}
 
 /**
- * 環境フラグを取得
+ * 環境変数からパース済み設定オブジェクトを生成する
+ * リクエストごとに呼び出し、c.var に格納して使用する
  */
-export function getEnvFlags(env: Partial<EnvConfig>) {
+export function createEnvConfig(env: Partial<EnvBindings>): EnvConfig {
     return {
-        isProduction: env.ENV_PRODUCTION === "true",
-        allowUserOperation: env.ALLOW_USER_OPERATION === "true",
+        accessTokenJwtKey: requireEnv(env.ACCESS_TOKEN_JWT_KEY, 'ACCESS_TOKEN_JWT_KEY'),
+        accessTokenExpires: requireEnv(env.ACCESS_TOKEN_EXPIRES, 'ACCESS_TOKEN_EXPIRES'),
+        refreshTokenJwtKey: requireEnv(env.REFRESH_TOKEN_JWT_KEY, 'REFRESH_TOKEN_JWT_KEY'),
+        refreshTokenExpires: requireEnv(env.REFRESH_TOKEN_EXPIRES, 'REFRESH_TOKEN_EXPIRES'),
+        pepper: requireEnv(env.PEPPER, 'PEPPER'),
+        corsOrigin: parseCorsOrigin(env.CORS_ORIGIN),
+        isProduction: env.ENV_PRODUCTION === 'true',
     };
 }

@@ -12,8 +12,9 @@ import type { AppEnv } from "../../../type";
 const frontUserLogout = new Hono<AppEnv>().post(
     API_ENDPOINT.LOGOUT,
     async (c) => {
+        const config = c.get('envConfig');
         // リフレッシュトークンを削除
-        deleteCookie(c, RefreshToken.COOKIE_KEY, RefreshToken.COOKIE_SET_OPTION);
+        deleteCookie(c, RefreshToken.COOKIE_KEY, RefreshToken.getCookieClearOption(config));
         return c.json({ message: `ログアウトしました。` }, HTTP_STATUS.OK);
     }
 );

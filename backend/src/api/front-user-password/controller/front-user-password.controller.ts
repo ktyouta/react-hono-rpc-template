@@ -1,6 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { envConfig } from "../../../config";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
 import {
     FrontUserId,
@@ -38,6 +37,7 @@ const frontUserPassword = new Hono<AppEnv>().patch(
         const { userId } = c.req.valid("param");
         const body = c.req.valid("json");
         const db = c.get('db');
+        const config = c.get('envConfig');
         const repository = new FrontUserPasswordRepository(db);
         const service = new FrontUserPasswordService(repository);
         const frontUserId = FrontUserId.of(userId);
@@ -50,7 +50,7 @@ const frontUserPassword = new Hono<AppEnv>().patch(
         }
 
         // パスワード検証
-        const pepper = new Pepper(envConfig.pepper);
+        const pepper = new Pepper(config.pepper);
         const salt = FrontUserSalt.of(loginInfo.salt);
         const nowPassword = await FrontUserPassword.hash(
             body.nowPassword,
@@ -58,7 +58,7 @@ const frontUserPassword = new Hono<AppEnv>().patch(
             pepper
         );
 
-        if (service.isMatchPassword(nowPassword, loginInfo)) {
+        if (!service.isMatchPassword(nowPassword, loginInfo)) {
             return c.json({ message: "パスワードの更新に失敗しました。" }, HTTP_STATUS.UNAUTHORIZED);
         }
 

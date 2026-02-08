@@ -9,8 +9,8 @@ describe("FrontUser Schema Validation", () => {
   describe("CreateFrontUserSchema", () => {
     it("正常なデータでバリデーションを通過すること", () => {
       const result = CreateFrontUserSchema.safeParse({
-        userName: "testuser",
-        userBirthday: "19900101",
+        name: "testuser",
+        birthday: "19900101",
         password: "password123",
         confirmPassword: "password123",
       });
@@ -19,8 +19,8 @@ describe("FrontUser Schema Validation", () => {
 
     it("ユーザー名が3文字未満の場合にエラーになること", () => {
       const result = CreateFrontUserSchema.safeParse({
-        userName: "ab",
-        userBirthday: "19900101",
+        name: "ab",
+        birthday: "19900101",
         password: "password123",
         confirmPassword: "password123",
       });
@@ -34,8 +34,8 @@ describe("FrontUser Schema Validation", () => {
 
     it("ユーザー名が30文字を超える場合にエラーになること", () => {
       const result = CreateFrontUserSchema.safeParse({
-        userName: "a".repeat(31),
-        userBirthday: "19900101",
+        name: "a".repeat(31),
+        birthday: "19900101",
         password: "password123",
         confirmPassword: "password123",
       });
@@ -49,8 +49,8 @@ describe("FrontUser Schema Validation", () => {
 
     it("生年月日が不正な形式の場合にエラーになること", () => {
       const result = CreateFrontUserSchema.safeParse({
-        userName: "testuser",
-        userBirthday: "1990-01-01",
+        name: "testuser",
+        birthday: "1990-01-01",
         password: "password123",
         confirmPassword: "password123",
       });
@@ -64,8 +64,8 @@ describe("FrontUser Schema Validation", () => {
 
     it("パスワードが8文字未満の場合にエラーになること", () => {
       const result = CreateFrontUserSchema.safeParse({
-        userName: "testuser",
-        userBirthday: "19900101",
+        name: "testuser",
+        birthday: "19900101",
         password: "pass123",
         confirmPassword: "pass123",
       });
@@ -79,8 +79,8 @@ describe("FrontUser Schema Validation", () => {
 
     it("パスワードに全角文字が含まれる場合にエラーになること", () => {
       const result = CreateFrontUserSchema.safeParse({
-        userName: "testuser",
-        userBirthday: "19900101",
+        name: "testuser",
+        birthday: "19900101",
         password: "パスワード123",
         confirmPassword: "パスワード123",
       });
@@ -94,8 +94,8 @@ describe("FrontUser Schema Validation", () => {
 
     it("確認用パスワードが一致しない場合にエラーになること", () => {
       const result = CreateFrontUserSchema.safeParse({
-        userName: "testuser",
-        userBirthday: "19900101",
+        name: "testuser",
+        birthday: "19900101",
         password: "password123",
         confirmPassword: "password456",
       });
@@ -111,24 +111,24 @@ describe("FrontUser Schema Validation", () => {
   describe("UpdateFrontUserSchema", () => {
     it("正常なデータでバリデーションを通過すること", () => {
       const result = UpdateFrontUserSchema.safeParse({
-        userName: "updateduser",
-        userBirthday: "19950515",
+        name: "updateduser",
+        birthday: "19950515",
       });
       expect(result.success).toBe(true);
     });
 
     it("ユーザー名が3文字未満の場合にエラーになること", () => {
       const result = UpdateFrontUserSchema.safeParse({
-        userName: "ab",
-        userBirthday: "19950515",
+        name: "ab",
+        birthday: "19950515",
       });
       expect(result.success).toBe(false);
     });
 
     it("生年月日が不正な形式の場合にエラーになること", () => {
       const result = UpdateFrontUserSchema.safeParse({
-        userName: "updateduser",
-        userBirthday: "invalid",
+        name: "updateduser",
+        birthday: "invalid",
       });
       expect(result.success).toBe(false);
     });

@@ -5,7 +5,7 @@ describe("FrontUserLogin Schema Validation", () => {
   describe("FrontUserLoginSchema", () => {
     it("正常なデータでバリデーションを通過すること", () => {
       const result = FrontUserLoginSchema.safeParse({
-        userName: "testuser",
+        name: "testuser",
         password: "password123",
       });
       expect(result.success).toBe(true);
@@ -13,7 +13,7 @@ describe("FrontUserLogin Schema Validation", () => {
 
     it("ユーザー名が空の場合にエラーになること", () => {
       const result = FrontUserLoginSchema.safeParse({
-        userName: "",
+        name: "",
         password: "password123",
       });
       expect(result.success).toBe(false);
@@ -26,7 +26,7 @@ describe("FrontUserLogin Schema Validation", () => {
 
     it("パスワードが空の場合にエラーになること", () => {
       const result = FrontUserLoginSchema.safeParse({
-        userName: "testuser",
+        name: "testuser",
         password: "",
       });
       expect(result.success).toBe(false);
@@ -39,7 +39,7 @@ describe("FrontUserLogin Schema Validation", () => {
 
     it("ユーザー名とパスワードが両方空の場合に複数エラーになること", () => {
       const result = FrontUserLoginSchema.safeParse({
-        userName: "",
+        name: "",
         password: "",
       });
       expect(result.success).toBe(false);

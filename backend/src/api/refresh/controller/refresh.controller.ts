@@ -12,12 +12,13 @@ import { RefreshService } from "../service";
  */
 const refresh = new Hono<AppEnv>().post(API_ENDPOINT.REFRESH, async (c) => {
 
+    const config = c.get('envConfig');
     try {
         const db = c.get('db');
         const repository = new RefreshRepository(db);
         const service = new RefreshService(repository);
         const cookie = new Cookie(getCookie(c));
-        const refreshToken = RefreshToken.get(cookie);
+        const refreshToken = RefreshToken.get(cookie, config);
 
         // トークン検証・ユーザーID取得
         let userId;
@@ -25,7 +26,7 @@ const refresh = new Hono<AppEnv>().post(API_ENDPOINT.REFRESH, async (c) => {
             userId = await refreshToken.getPayload();
         } catch {
             console.warn("Refresh failed: リフレッシュトークンが無効です");
-            setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.COOKIE_CLEAR_OPTION);
+            setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.getCookieClearOption(config));
             return c.json({ message: "認証失敗" }, HTTP_STATUS.UNAUTHORIZED);
         }
 
@@ -33,7 +34,7 @@ const refresh = new Hono<AppEnv>().post(API_ENDPOINT.REFRESH, async (c) => {
         const userInfo = await service.getUser(userId);
         if (!userInfo) {
             console.warn("Refresh failed: ユーザーが見つかりません");
-            setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.COOKIE_CLEAR_OPTION);
+            setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.getCookieClearOption(config));
             return c.json({ message: "認証失敗" }, HTTP_STATUS.UNAUTHORIZED);
         }
 
@@ -41,22 +42,22 @@ const refresh = new Hono<AppEnv>().post(API_ENDPOINT.REFRESH, async (c) => {
         const isExpired = await refreshToken.isAbsoluteExpired();
         if (isExpired) {
             console.warn("Refresh failed: リフレッシュトークンの絶対期限切れ");
-            setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.COOKIE_CLEAR_OPTION);
+            setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.getCookieClearOption(config));
             return c.json({ message: "認証失敗" }, HTTP_STATUS.UNAUTHORIZED);
         }
 
         // 新しいトークンを生成
         const newRefreshToken = await refreshToken.refresh();
-        const accessToken = await AccessToken.create(userId);
+        const accessToken = await AccessToken.create(userId, config);
 
         // 新しいリフレッシュトークンをCookieに設定
-        setCookie(c, RefreshToken.COOKIE_KEY, newRefreshToken.value, RefreshToken.COOKIE_SET_OPTION);
+        setCookie(c, RefreshToken.COOKIE_KEY, newRefreshToken.value, RefreshToken.getCookieSetOption(config));
 
         return c.json({ message: "認証成功", data: accessToken.token }, 200);
     } catch (e) {
         console.warn(`Refresh failed: ${e}`);
 
-        setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.COOKIE_CLEAR_OPTION);
+        setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.getCookieClearOption(config));
 
         return c.json({ message: "認証失敗" }, HTTP_STATUS.UNAUTHORIZED);
     }

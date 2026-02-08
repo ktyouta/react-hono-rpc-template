@@ -13,8 +13,9 @@ export const authMiddleware: MiddlewareHandler<AppEnv> = async (c, next) => {
 
     try {
 
+        const config = c.get('envConfig');
         const header = new Header(c.req.raw);
-        const accessToken = AccessToken.get(header);
+        const accessToken = AccessToken.get(header, config);
 
         const userId = await accessToken.getPayload();
 

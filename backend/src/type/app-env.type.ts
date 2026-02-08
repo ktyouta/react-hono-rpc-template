@@ -1,3 +1,4 @@
+import type { EnvBindings, EnvConfig } from "../config";
 import type { FrontUserId } from "../domain";
 import type { Database } from "../infrastructure/db";
 
@@ -22,15 +23,11 @@ export type AuthUserType = {
  * Honoアプリケーション環境変数の型定義
  */
 export type AppEnv = {
-  Bindings: {
-    DB: D1Database;
-    // 機能制御
-    ALLOW_USER_OPERATION: string;
-    ENV_PRODUCTION: string;
-  };
+  Bindings: EnvBindings;
   Variables: {
     requestId: string;
     user?: AuthUserType;
     db: Database;
+    envConfig: EnvConfig;
   };
 };

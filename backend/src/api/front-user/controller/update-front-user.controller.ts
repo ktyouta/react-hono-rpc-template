@@ -38,6 +38,7 @@ const updateFrontUser = new Hono<AppEnv>().patch(
         const { userId } = c.req.valid("param");
         const body = c.req.valid("json");
         const db = c.get('db');
+        const config = c.get('envConfig');
 
         const frontUserId = FrontUserId.of(userId);
         const userName = new FrontUserName(body.name);
@@ -74,7 +75,7 @@ const updateFrontUser = new Hono<AppEnv>().patch(
         }
 
         // 新しいリフレッシュトークンを発行
-        const refreshToken = await RefreshToken.create(frontUserId);
+        const refreshToken = await RefreshToken.create(frontUserId, config);
 
         const responseDto = new UpdateFrontUserResponseDto(
             updated.user.id,
@@ -83,7 +84,7 @@ const updateFrontUser = new Hono<AppEnv>().patch(
         );
 
         // リフレッシュトークンをCookieに設定
-        setCookie(c, RefreshToken.COOKIE_KEY, refreshToken.value, RefreshToken.COOKIE_SET_OPTION);
+        setCookie(c, RefreshToken.COOKIE_KEY, refreshToken.value, RefreshToken.getCookieSetOption(config));
 
         return c.json({ message: "ユーザー情報の更新が完了しました。", data: responseDto.value }, HTTP_STATUS.OK);
     }

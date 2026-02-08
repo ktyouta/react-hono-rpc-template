@@ -1,7 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
-import { envConfig } from "../../../config";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
 import {
     AccessToken,
@@ -40,13 +39,14 @@ const createFrontUser = new Hono<AppEnv>().post(
     async (c) => {
         const body = c.req.valid("json");
         const db = c.get('db');
+        const config = c.get('envConfig');
         const repository = new CreateFrontUserRepository(db);
 
         // ドメインオブジェクトを生成
         const userName = new FrontUserName(body.name);
         const userBirthday = new FrontUserBirthday(body.birthday);
         const salt = FrontUserSalt.generate();
-        const pepper = new Pepper(envConfig.pepper);
+        const pepper = new Pepper(config.pepper);
         const userPassword = await FrontUserPassword.hash(
             body.password,
             salt,
@@ -85,8 +85,8 @@ const createFrontUser = new Hono<AppEnv>().post(
         });
 
         // トークンを発行
-        const accessToken = await AccessToken.create(frontUserId);
-        const refreshToken = await RefreshToken.create(frontUserId);
+        const accessToken = await AccessToken.create(frontUserId, config);
+        const refreshToken = await RefreshToken.create(frontUserId, config);
 
         const responseDto = new CreateFrontUserResponseDto(
             userEntity,
@@ -94,7 +94,7 @@ const createFrontUser = new Hono<AppEnv>().post(
         );
 
         // リフレッシュトークンをCookieに設定
-        setCookie(c, RefreshToken.COOKIE_KEY, refreshToken.value, RefreshToken.COOKIE_SET_OPTION);
+        setCookie(c, RefreshToken.COOKIE_KEY, refreshToken.value, RefreshToken.getCookieSetOption(config));
 
         return c.json({ message: "ユーザー情報の登録が完了しました。", data: responseDto.value }, HTTP_STATUS.CREATED);
     }

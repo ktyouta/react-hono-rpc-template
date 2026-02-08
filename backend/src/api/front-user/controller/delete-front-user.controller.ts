@@ -25,6 +25,7 @@ const deleteFrontUser = new Hono<AppEnv>().delete(
     async (c) => {
         const { userId } = c.req.valid("param");
         const db = c.get('db');
+        const config = c.get('envConfig');
         const frontUserId = FrontUserId.of(userId);
 
         // トランザクション: ログイン情報削除 + ユーザー情報削除
@@ -43,7 +44,7 @@ const deleteFrontUser = new Hono<AppEnv>().delete(
         }
 
         // リフレッシュトークンCookieをクリア
-        setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.COOKIE_CLEAR_OPTION);
+        setCookie(c, RefreshToken.COOKIE_KEY, "", RefreshToken.getCookieClearOption(config));
 
         return c.body(null, HTTP_STATUS.NO_CONTENT);
     }

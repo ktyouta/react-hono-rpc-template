@@ -1,7 +1,6 @@
-import { Hono } from "hono";
+import { Context, Hono } from "hono";
 import { cors } from "hono/cors";
 import { frontUser, frontUserLogin, frontUserLogout, frontUserPassword, health, refresh, sample, verify } from "./api";
-import { envConfig } from "./config";
 import {
   accessLogMiddleware,
   createDbClientMiddleware,
@@ -19,8 +18,9 @@ app.use("*", envInitMiddleware);
 app.use(
   '*',
   cors({
-    origin: (origin) => {
-      return envConfig.corsOrigin.includes(origin) ? origin : '';
+    origin: (origin, c: Context<AppEnv>) => {
+      const config = c.get('envConfig');
+      return config.corsOrigin.includes(origin) ? origin : '';
     },
     credentials: true,
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],

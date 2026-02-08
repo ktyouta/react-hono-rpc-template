@@ -1,7 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
-import { envConfig } from "../../../config";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
 import {
     AccessToken,
@@ -34,6 +33,7 @@ const frontUserLogin = new Hono<AppEnv>().post(
     async (c) => {
         const body = c.req.valid("json");
         const db = c.get('db');
+        const config = c.get('envConfig');
         const repository = new FrontUserLoginRepository(db);
         const service = new FrontUserLoginService(repository);
 
@@ -48,14 +48,14 @@ const frontUserLogin = new Hono<AppEnv>().post(
         // パスワード検証
         const frontUserId = FrontUserId.of(loginInfo.id);
         const salt = FrontUserSalt.of(loginInfo.salt);
-        const pepper = new Pepper(envConfig.pepper);
+        const pepper = new Pepper(config.pepper);
         const password = await FrontUserPassword.hash(
             body.password,
             salt,
             pepper
         );
 
-        if (service.isMatchPassword(password, loginInfo)) {
+        if (!service.isMatchPassword(password, loginInfo)) {
             return c.json({ message: "IDかパスワードが間違っています。" }, HTTP_STATUS.UNAUTHORIZED);
         }
 
@@ -67,8 +67,8 @@ const frontUserLogin = new Hono<AppEnv>().post(
         }
 
         // トークンを発行
-        const accessToken = await AccessToken.create(frontUserId);
-        const refreshToken = await RefreshToken.create(frontUserId);
+        const accessToken = await AccessToken.create(frontUserId, config);
+        const refreshToken = await RefreshToken.create(frontUserId, config);
 
         // 最終ログイン日時を更新
         await service.updateLastLoginDate(frontUserId);
@@ -79,7 +79,7 @@ const frontUserLogin = new Hono<AppEnv>().post(
         );
 
         // リフレッシュトークンをCookieに設定
-        setCookie(c, RefreshToken.COOKIE_KEY, refreshToken.value, RefreshToken.COOKIE_SET_OPTION);
+        setCookie(c, RefreshToken.COOKIE_KEY, refreshToken.value, RefreshToken.getCookieSetOption(config));
 
         return c.json({ message: "ログイン成功", data: responseDto.value }, HTTP_STATUS.OK);
     }
