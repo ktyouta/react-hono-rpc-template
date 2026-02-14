@@ -3,7 +3,7 @@ import { LoginContainer } from '@/features/login/components/login-container';
 import { SignupContainer } from '@/features/signup/components/signup-container';
 import { UpdatePasswordContainer } from '@/features/updatepassword/components/update-password-container';
 import { UpdateUserContainer } from '@/features/updateuser/components/update-user-container';
-import { lazy, ReactNode } from 'react';
+import { lazy } from 'react';
 import { useRoutes } from 'react-router-dom';
 import { GuestRoute } from './guest-route';
 import { ProtectedRoute } from './protected-route';
@@ -15,7 +15,7 @@ const MyPage = lazy(() => import('@/features/mypage/components/mypage/mypage').t
 const NotFound = lazy(() => import('@/components/pages/notfound/not-found').then(m => ({ default: m.NotFound })));
 
 
-const routerList: { path: string, element: ReactNode }[] = [
+const routerList = [
     {
         path: paths.home.path,
         element: (
@@ -29,44 +29,44 @@ const routerList: { path: string, element: ReactNode }[] = [
         )
     },
     {
-        path: paths.mypage.path,
-        element: (
-            <ProtectedRoute>
-                <MyPage />
-            </ProtectedRoute>
-        )
+        element: <GuestRoute />,
+        children: [
+            {
+                path: paths.login.path,
+                element: (
+                    <LoginContainer />
+                )
+            },
+            {
+                path: paths.signup.path,
+                element: (
+                    <SignupContainer />
+                )
+            }
+        ]
     },
     {
-        path: paths.login.path,
-        element: (
-            <GuestRoute>
-                <LoginContainer />
-            </GuestRoute>
-        )
-    },
-    {
-        path: paths.signup.path,
-        element: (
-            <GuestRoute>
-                <SignupContainer />
-            </GuestRoute>
-        )
-    },
-    {
-        path: paths.updateUser.path,
-        element: (
-            <ProtectedRoute>
-                <UpdateUserContainer />
-            </ProtectedRoute>
-        )
-    },
-    {
-        path: paths.updatePassword.path,
-        element: (
-            <ProtectedRoute>
-                <UpdatePasswordContainer />
-            </ProtectedRoute>
-        )
+        element: <ProtectedRoute />,
+        children: [
+            {
+                path: paths.updateUser.path,
+                element: (
+                    <UpdateUserContainer />
+                )
+            },
+            {
+                path: paths.updatePassword.path,
+                element: (
+                    <UpdatePasswordContainer />
+                )
+            },
+            {
+                path: paths.mypage.path,
+                element: (
+                    <MyPage />
+                )
+            }
+        ]
     },
     {
         path: `*`,

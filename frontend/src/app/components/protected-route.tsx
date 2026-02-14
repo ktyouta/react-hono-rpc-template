@@ -1,13 +1,9 @@
 import { paths } from "@/config/paths";
-import React, { ReactNode } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { LoginUserContext } from "./login-user-provider";
 
-type PropsType = {
-    children: ReactNode;
-}
 
-export function ProtectedRoute(props: PropsType) {
+export function ProtectedRoute() {
 
     // ログインユーザー情報
     const loginUser = LoginUserContext.useCtx();
@@ -24,9 +20,7 @@ export function ProtectedRoute(props: PropsType) {
     }
 
     return (
-        <React.Fragment>
-            {props.children}
-        </React.Fragment>
+        <Outlet />
     );
 }
 

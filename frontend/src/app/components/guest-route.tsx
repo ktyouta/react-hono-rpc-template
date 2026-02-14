@@ -1,13 +1,9 @@
 import { paths } from "@/config/paths";
-import React, { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { LoginUserContext } from "./login-user-provider";
 
-type PropsType = {
-    children: ReactNode;
-}
 
-export function GuestRoute(props: PropsType) {
+export function GuestRoute() {
 
     // ログインユーザー情報
     const loginUser = LoginUserContext.useCtx();
@@ -22,9 +18,7 @@ export function GuestRoute(props: PropsType) {
     }
 
     return (
-        <React.Fragment>
-            {props.children}
-        </React.Fragment>
+        <Outlet />
     );
 }
 
