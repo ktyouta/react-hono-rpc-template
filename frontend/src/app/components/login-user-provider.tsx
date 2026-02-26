@@ -3,7 +3,7 @@ import { registerResetLogin } from "@/stores/access-token-store";
 import { createCtx } from "@/utils/create-ctx";
 import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LoginUserType, verify } from "../api/verify";
+import { LoginUserType } from "../api/verify";
 
 // ログインユーザー情報
 export const LoginUserContext = createCtx<LoginUserType | null>();
@@ -14,16 +14,15 @@ export const IsAuthLoadingContext = createCtx<boolean>();
 
 type PropsType = {
     children: ReactNode;
+    loginUser: LoginUserType | null;
 }
 
 export function LoginUserProvider(props: PropsType) {
 
     // ログインユーザー情報
-    const [loginUser, setLoginUser] = useState<LoginUserType | null>(null);
+    const [loginUser, setLoginUser] = useState<LoginUserType | null>(props.loginUser);
     // ルーティング用
     const navigate = useNavigate();
-    // 認証チェック
-    const { data } = verify();
 
     /**
      * ログイン画面に遷移
@@ -38,16 +37,6 @@ export function LoginUserProvider(props: PropsType) {
     function resetUser() {
         setLoginUser(null);
     }
-
-    useEffect(() => {
-        if (data && !loginUser) {
-            setLoginUser({
-                id: data.data.userInfo.id,
-                name: data.data.userInfo.name,
-                birthday: data.data.userInfo.birthday,
-            });
-        }
-    }, [data, loginUser]);
 
     // ログインリセット処理を登録
     useEffect(() => {

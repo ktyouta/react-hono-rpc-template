@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { LoginUserProvider } from './login-user-provider';
 import { AppRouter } from './router';
+import { VerifyApp } from './verify-app';
 
 //React-Query用
 const queryClient = new QueryClient({
@@ -35,9 +36,15 @@ export function App() {
               position="top-center"
               autoClose={3000}
             />
-            <LoginUserProvider>
-              <AppRouter />
-            </LoginUserProvider>
+            <VerifyApp>
+              {({ user }) =>
+                <LoginUserProvider
+                  loginUser={user}
+                >
+                  <AppRouter />
+                </LoginUserProvider>
+              }
+            </VerifyApp>
             {/* React-query devtool */}
             <ReactQueryDevtools
               initialIsOpen={false}
