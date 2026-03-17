@@ -1,9 +1,9 @@
 import { LoginUserContext, SetLoginUserContext } from '@/app/components/login-user-provider';
 import { paths } from '@/config/paths';
 import { useAppNavigation } from '@/hooks/use-app-navigation';
-import { useQueryParams } from '@/hooks/use-query-params';
 import { updateAccessToken } from '@/stores/access-token-store';
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useLoginMutation } from '../api/login';
 import { LoginRequestType } from '../types/login-request-type';
 import { useLoginForm } from './use-login-form';
@@ -20,10 +20,10 @@ export function useLogin() {
     // ログインユーザー情報
     const loginUser = LoginUserContext.useCtx();
     // ルーティング用
-    const { appNavigate, appGoBack } = useAppNavigation();
+    const { appNavigate } = useAppNavigation();
     // リダイレクト先
-    const queryParams = useQueryParams();
-    const redirectTo = queryParams.redirectTo || paths.home.path;
+    const [searchParams] = useSearchParams();
+    const redirectTo = searchParams.get('redirectTo') || paths.home.path;
 
     /**
      * ログインリクエスト
@@ -64,11 +64,20 @@ export function useLogin() {
     });
 
     /**
-     * 前画面に戻る
+     * サインアップ画面に遷移
      */
-    function back() {
-        appGoBack(paths.home.path);
+    function navigateSignup() {
+        appNavigate(paths.signup.path);
     }
+
+    /**
+     * エンターキー押下時イベント
+     */
+    function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
+        if (event.key === 'Enter') {
+            clickLogin();
+        }
+    };
 
     return {
         errMessage,
@@ -77,7 +86,8 @@ export function useLogin() {
         errors,
         clickLogin,
         loginUser,
-        back,
         redirectTo,
+        navigateSignup,
+        handleKeyPress,
     }
 }

@@ -13,7 +13,8 @@ type PropsType = {
         password: string;
     }>,
     clickLogin: (e?: React.BaseSyntheticEvent<object, any, any> | undefined) => Promise<void>,
-    back(): void,
+    navigateSignup(): void,
+    handleKeyPress: (event: React.KeyboardEvent<HTMLInputElement>) => void,
 }
 
 export function Login(props: PropsType) {
@@ -24,7 +25,8 @@ export function Login(props: PropsType) {
         register,
         errors,
         clickLogin,
-        back,
+        navigateSignup,
+        handleKeyPress,
     } = props;
 
     return (
@@ -53,6 +55,7 @@ export function Login(props: PropsType) {
                             className={`w-full h-12 px-4 rounded-lg border-gray-300 ${errors.name ? 'border-red-500 focus:ring-red-500' : ''}`}
                             autoComplete="off"
                             registration={register("name")}
+                            onKeyDown={handleKeyPress}
                         />
                         {errors.name?.message && (
                             <p className="text-red-500 text-xs mt-2">{errors.name.message}</p>
@@ -68,19 +71,21 @@ export function Login(props: PropsType) {
                             type="password"
                             autoComplete="off"
                             registration={register("password")}
+                            onKeyDown={handleKeyPress}
                         />
                         {errors.password?.message && (
                             <p className="text-red-500 text-xs mt-2">{errors.password.message}</p>
                         )}
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                        <button
-                            type="button"
-                            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors"
-                            onClick={back}
+                    <div>
+                        <span
+                            className='text-blue-700 cursor-pointer'
+                            onClick={navigateSignup}
                         >
-                            戻る
-                        </button>
+                            アカウント作成はこちらから
+                        </span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3 mt-4">
                         <button
                             type="button"
                             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"

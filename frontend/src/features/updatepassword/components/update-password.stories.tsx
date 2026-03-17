@@ -16,10 +16,11 @@ type Story = StoryObj<typeof UpdatePassword>;
 export const Default: Story = {
     render: () => {
         const { register, formState: { errors } } = useForm<{
-            password: string;
+            nowPassword: string;
+            newPassword: string;
             confirmPassword: string;
         }>({
-            defaultValues: { password: '', confirmPassword: '' },
+            defaultValues: { nowPassword: '', newPassword: '', confirmPassword: '' },
         });
         return (
             <UpdatePassword

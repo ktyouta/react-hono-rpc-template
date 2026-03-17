@@ -4,7 +4,7 @@ import { type ComponentPropsWithoutRef } from "react";
 import { UseFormRegisterReturn } from "react-hook-form";
 
 type Props = {
-    registration: Partial<UseFormRegisterReturn>;
+    registration?: Partial<UseFormRegisterReturn>;
 } & Omit<ComponentPropsWithoutRef<"input">, "ref">;
 
 export const Textbox = React.forwardRef<HTMLInputElement, Props>(
@@ -15,7 +15,7 @@ export const Textbox = React.forwardRef<HTMLInputElement, Props>(
                 {...registration}
                 {...props}
                 className={cn(
-                    "h-9 border border-[#767676] rounded px-1.5",
+                    "h-9 border border-[#767676] rounded px-1.5 text-base",
                     "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
                     className
                 )}
