@@ -7,11 +7,13 @@ type PropsType = {
     back: () => void,
     isLoading: boolean,
     register: UseFormRegister<{
-        password: string;
+        nowPassword: string;
+        newPassword: string;
         confirmPassword: string;
     }>,
     errors: FieldErrors<{
-        password: string;
+        nowPassword: string;
+        newPassword: string;
         confirmPassword: string;
     }>,
     handleConfirm: (e?: BaseSyntheticEvent<object, any, any> | undefined) => Promise<void>
@@ -47,17 +49,30 @@ export function UpdatePassword(props: PropsType) {
                 <div className="flex flex-col gap-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            パスワード
+                            現在のパスワード
                         </label>
                         <Textbox
-                            className={`w-full h-12 px-4 rounded-lg border-gray-300 ${errors.password ? 'border-red-500 focus:ring-red-500' : ''}`}
+                            className={`w-full h-12 px-4 rounded-lg border-gray-300 ${errors.nowPassword ? 'border-red-500 focus:ring-red-500' : ''}`}
                             type="password"
-                            maxLength={30}
                             autoComplete="off"
-                            registration={register("password")}
+                            registration={register("nowPassword")}
                         />
-                        {errors.password?.message && (
-                            <p className="text-red-500 text-xs mt-2">{errors.password.message}</p>
+                        {errors.nowPassword?.message && (
+                            <p className="text-red-500 text-xs mt-2">{errors.nowPassword.message}</p>
+                        )}
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            新しいパスワード
+                        </label>
+                        <Textbox
+                            className={`w-full h-12 px-4 rounded-lg border-gray-300 ${errors.newPassword ? 'border-red-500 focus:ring-red-500' : ''}`}
+                            type="password"
+                            autoComplete="off"
+                            registration={register("newPassword")}
+                        />
+                        {errors.newPassword?.message && (
+                            <p className="text-red-500 text-xs mt-2">{errors.newPassword.message}</p>
                         )}
                     </div>
                     <div>
@@ -67,7 +82,6 @@ export function UpdatePassword(props: PropsType) {
                         <Textbox
                             className={`w-full h-12 px-4 rounded-lg border-gray-300 ${errors.confirmPassword ? 'border-red-500 focus:ring-red-500' : ''}`}
                             type="password"
-                            maxLength={30}
                             autoComplete="off"
                             registration={register("confirmPassword")}
                         />

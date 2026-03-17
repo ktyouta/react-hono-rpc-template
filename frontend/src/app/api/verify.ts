@@ -1,7 +1,7 @@
 import { rpc } from "@/lib/rpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import type { InferResponseType } from 'hono/client';
-import { verifyyKeys } from "./query-key";
+import { verifyKeys } from "./query-key";
 
 const endpoint = rpc.api.v1.verify.$get;
 
@@ -16,7 +16,7 @@ export type LoginUserType = InferResponseType<typeof endpoint, 200>['data']['use
 export function verify() {
 
     return useSuspenseQuery({
-        queryKey: verifyyKeys.all,
+        queryKey: verifyKeys.all,
         queryFn: async () => {
             try {
                 const res = await endpoint();

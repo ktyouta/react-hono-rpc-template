@@ -1,12 +1,11 @@
+import { LoginUserContext } from '@/app/components/login-user-provider';
 import { paths } from '@/config/paths';
 import { useAppNavigation } from '@/hooks/use-app-navigation';
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import { useUpdatePasswordMutation } from '../api/update-password';
 import { useUpdatePasswordForm } from './use-update-password.form';
-
-// TODO: バックエンドにパスワード更新専用のエンドポイントが存在しない
-// UpdateFrontUserSchema には name と birthday のみで、password フィールドがない
-// パスワード更新機能を実装する場合は、バックエンドにエンドポイントを追加する必要がある
 
 export function useUpdatePassword() {
 
@@ -14,22 +13,40 @@ export function useUpdatePassword() {
     const navigate = useNavigate();
     // エラーメッセージ
     const [errMessage, setErrMessage] = useState(``);
+    // ログインユーザー情報
+    const loginUser = LoginUserContext.useCtx();
     // フォーム
-    const { register, handleSubmit, formState: { errors }, reset } = useUpdatePasswordForm();
+    const { register, handleSubmit, formState: { errors } } = useUpdatePasswordForm();
     // ルーティング用
     const { appGoBack } = useAppNavigation();
-    // ローディング状態
-    const [isLoading, setIsLoading] = useState(false);
+    // 更新リクエスト
+    const postMutation = useUpdatePasswordMutation({
+        onSuccess: (res) => {
+            navigate(paths.home.path);
+            toast.success(res.message);
+        },
+        onError: (message: string) => {
+            setErrMessage(message);
+        },
+    });
 
     /**
      * パスワード更新実行
      */
-    const handleConfirm = handleSubmit((_data) => {
-        // TODO: バックエンドにパスワード更新エンドポイントを追加後に実装
-        setErrMessage('パスワード更新機能は現在利用できません');
-        reset({
-            password: ``,
-            confirmPassword: ``,
+    const handleConfirm = handleSubmit((data) => {
+
+        if (!loginUser?.id) {
+            setErrMessage('ユーザー情報が取得できません');
+            return;
+        }
+
+        postMutation.mutate({
+            userId: String(loginUser.id),
+            json: {
+                nowPassword: data.nowPassword,
+                newPassword: data.newPassword,
+                confirmPassword: data.confirmPassword,
+            },
         });
     });
 
@@ -43,7 +60,7 @@ export function useUpdatePassword() {
     return {
         errMessage,
         back,
-        isLoading,
+        isLoading: postMutation.isPending,
         register,
         errors,
         handleConfirm,

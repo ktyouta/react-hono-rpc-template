@@ -9,8 +9,6 @@ import { LoginUserType } from "../api/verify";
 export const LoginUserContext = createCtx<LoginUserType | null>();
 // ログインユーザー情報(setter)
 export const SetLoginUserContext = createCtx<React.Dispatch<React.SetStateAction<LoginUserType | null>>>();
-// 認証チェック中フラグ
-export const IsAuthLoadingContext = createCtx<boolean>();
 
 type PropsType = {
     children: ReactNode;

@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { BrowserRouter } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import { AppErrorBoundary } from './app-error-boundary';
 import { LoginUserProvider } from './login-user-provider';
 import { AppRouter } from './router';
 import { VerifyApp } from './verify-app';
@@ -26,31 +27,33 @@ export function App() {
       <ErrorBoundary
         FallbackComponent={Errors}
       >
-        <Suspense
-          fallback={<Loading />}
-        >
-          <QueryClientProvider
-            client={queryClient}
+        <AppErrorBoundary>
+          <Suspense
+            fallback={<Loading />}
           >
-            <ToastContainer
-              position="top-center"
-              autoClose={3000}
-            />
-            <VerifyApp>
-              {({ user }) =>
-                <LoginUserProvider
-                  loginUser={user}
-                >
-                  <AppRouter />
-                </LoginUserProvider>
-              }
-            </VerifyApp>
-            {/* React-query devtool */}
-            <ReactQueryDevtools
-              initialIsOpen={false}
-            />
-          </QueryClientProvider>
-        </Suspense>
+            <QueryClientProvider
+              client={queryClient}
+            >
+              <ToastContainer
+                position="top-center"
+                autoClose={3000}
+              />
+              <VerifyApp>
+                {({ user }) => (
+                  <LoginUserProvider
+                    loginUser={user}
+                  >
+                    <AppRouter />
+                  </LoginUserProvider>
+                )}
+              </VerifyApp>
+              {/* React-query devtool */}
+              <ReactQueryDevtools
+                initialIsOpen={false}
+              />
+            </QueryClientProvider>
+          </Suspense>
+        </AppErrorBoundary>
       </ErrorBoundary>
     </BrowserRouter>
   )

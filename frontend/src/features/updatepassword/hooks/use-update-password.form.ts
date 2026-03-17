@@ -8,7 +8,8 @@ export function useUpdatePasswordForm() {
     return useForm<UpdatePasswordRequestType>({
         resolver: zodResolver(UpdatePasswordRequestSchema),
         defaultValues: {
-            password: ``,
+            nowPassword: ``,
+            newPassword: ``,
             confirmPassword: ``,
         },
         mode: "onSubmit",

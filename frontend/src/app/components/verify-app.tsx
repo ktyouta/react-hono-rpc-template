@@ -1,12 +1,12 @@
 import { ReactNode } from "react";
 import { LoginUserType, verify } from "../api/verify";
 
-type ChildrenPropsTYpe = {
+type ChildrenPropsType = {
     user: LoginUserType | null
 }
 
 type PropsType = {
-    children: (props: ChildrenPropsTYpe) => ReactNode;
+    children: (props: ChildrenPropsType) => ReactNode;
 }
 
 export function VerifyApp(props: PropsType) {
