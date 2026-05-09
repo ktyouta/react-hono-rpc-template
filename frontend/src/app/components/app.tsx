@@ -50,6 +50,7 @@ export function App() {
               {/* React-query devtool */}
               <ReactQueryDevtools
                 initialIsOpen={false}
+                buttonPosition='bottom-left'
               />
             </QueryClientProvider>
           </Suspense>
