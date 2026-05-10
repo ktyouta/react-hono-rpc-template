@@ -8,6 +8,7 @@
 # =====================
 **/dist/
 **/dist-ssr/
+*.tsbuildinfo
 
 # =====================
 # env
@@ -52,5 +53,7 @@ lerna-debug.log*
 .claude/**
 !.claude/commands/
 !.claude/commands/**
+!.claude/agents/
+!.claude/agents/**
 
 tmpclaude-*
