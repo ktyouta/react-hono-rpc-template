@@ -1,13 +1,13 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 /**
- * サンプルテーブルスキーマ
+ * サンプルテーブル
  */
 export const sample = sqliteTable("sample", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
   description: text("description"),
-  deleteFlg: text("delete_flg").notNull().default("0"),
+  deleteFlg: integer("delete_flg", { mode: "boolean" }).notNull().default(false),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 });
@@ -16,46 +16,36 @@ export type Sample = typeof sample.$inferSelect;
 export type NewSample = typeof sample.$inferInsert;
 
 /**
- * フロントユーザーマスタ
+ * ユーザーマスタ
  */
-export const frontUserMaster = sqliteTable("front_user_master", {
-  id: integer("id").primaryKey(),
+export const userMaster = sqliteTable("user_master", {
+  id: text("id").primaryKey(), // ULID
   name: text("name").notNull().unique(),
   birthday: text("birthday").notNull(),
   lastLoginDate: text("last_login_date"),
-  deleteFlg: text("delete_flg").notNull().default("0"),
+  deleteFlg: integer("delete_flg", { mode: "boolean" }).notNull().default(false),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 });
 
-export type FrontUserMaster = typeof frontUserMaster.$inferSelect;
-export type NewFrontUserMaster = typeof frontUserMaster.$inferInsert;
+export type UserMaster = typeof userMaster.$inferSelect;
+export type NewUserMaster = typeof userMaster.$inferInsert;
 
 /**
- * フロントユーザーログインマスタ
+ * ユーザーログインマスタ
  */
-export const frontUserLoginMaster = sqliteTable("front_user_login_master", {
-  id: integer("id").primaryKey(),
-  name: text("name").notNull().unique(),
-  password: text("password").notNull(),
+export const userLoginMaster = sqliteTable("user_login_master", {
+  id: text("id").primaryKey(), // ULID（ログインレコード自身のID）
+  userId: text("user_id").notNull(), // FK → user_master.id
+  loginId: text("login_id").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
   salt: text("salt").notNull(),
-  deleteFlg: text("delete_flg").notNull().default("0"),
+  authProvider: text("auth_provider").notNull().default("password"),
+  googleId: text("google_id"),
+  deleteFlg: integer("delete_flg", { mode: "boolean" }).notNull().default(false),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 });
 
-export type FrontUserLoginMaster = typeof frontUserLoginMaster.$inferSelect;
-export type NewFrontUserLoginMaster = typeof frontUserLoginMaster.$inferInsert;
-
-/**
- * シーケンスマスタ（ID採番用）
- */
-export const seqMaster = sqliteTable("seq_master", {
-  key: text("key").primaryKey(),
-  nextId: integer("next_id").notNull().default(1),
-  createdAt: text("created_at").notNull(),
-  updatedAt: text("updated_at").notNull(),
-});
-
-export type SeqMaster = typeof seqMaster.$inferSelect;
-export type NewSeqMaster = typeof seqMaster.$inferInsert;
+export type UserLoginMaster = typeof userLoginMaster.$inferSelect;
+export type NewUserLoginMaster = typeof userLoginMaster.$inferInsert;

@@ -1,6 +1,6 @@
-import type { Context, Next } from "hono";
+﻿import type { Context, Next } from "hono";
 import { createEnvConfig } from "../config";
-import type { AppEnv } from "../type";
+import type { AppEnv } from "../types";
 
 /**
  * 環境変数初期化ミドルウェア

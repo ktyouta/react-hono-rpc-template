@@ -1,5 +1,4 @@
 import { and, eq } from "drizzle-orm";
-import { FLG } from "../../../constant";
 import type { Database, Sample } from "../../../infrastructure/db";
 import { sample } from "../../../infrastructure/db";
 import type { IUpdateSampleRepository, UpdateSampleInput } from "./update-sample.repository.interface";
@@ -21,7 +20,7 @@ export class UpdateSampleRepository implements IUpdateSampleRepository {
         ...data,
         updatedAt: now,
       })
-      .where(and(eq(sample.id, id), eq(sample.deleteFlg, FLG.OFF)))
+      .where(and(eq(sample.id, id), eq(sample.deleteFlg, false)))
       .returning();
     return result[0];
   }

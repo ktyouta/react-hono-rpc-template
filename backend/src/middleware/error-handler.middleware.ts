@@ -1,8 +1,8 @@
-import type { ErrorHandler } from "hono";
+﻿import type { ErrorHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { HTTP_STATUS } from "../constant";
-import type { AppEnv } from "../type";
+import type { AppEnv } from "../types";
 
 /**
  * 共通エラーハンドラー

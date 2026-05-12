@@ -1,5 +1,4 @@
 import { and, eq } from "drizzle-orm";
-import { FLG } from "../../../constant";
 import type { Database, Sample } from "../../../infrastructure/db";
 import { sample } from "../../../infrastructure/db";
 import type { IGetSampleRepository } from "./get-sample.repository.interface";
@@ -17,7 +16,7 @@ export class GetSampleRepository implements IGetSampleRepository {
     const result = await this.db
       .select()
       .from(sample)
-      .where(and(eq(sample.id, id), eq(sample.deleteFlg, FLG.OFF)));
+      .where(and(eq(sample.id, id), eq(sample.deleteFlg, false)));
     return result[0];
   }
 }

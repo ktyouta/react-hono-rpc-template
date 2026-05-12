@@ -1,5 +1,5 @@
-import type { ZodError } from "zod";
-import type { ValidationErrorType } from "../type";
+﻿import type { ZodError } from "zod";
+import type { ValidationErrorType } from "../types";
 
 /**
  * Zodエラーをフォーマットする

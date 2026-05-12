@@ -1,5 +1,5 @@
-import type { MiddlewareHandler } from "hono";
-import type { AppEnv } from "../type";
+﻿import type { MiddlewareHandler } from "hono";
+import type { AppEnv } from "../types";
 
 /**
  * アクセスログを出力するミドルウェア

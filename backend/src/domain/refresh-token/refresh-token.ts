@@ -2,7 +2,7 @@ import { sign, verify } from "hono/jwt";
 import type { EnvConfig } from "../../config";
 import { parseDuration } from "../../util";
 import { Cookie } from "../cookie";
-import { FrontUserId } from "../front-user-id";
+import { UserId } from "../user-id";
 
 
 export class RefreshToken {
@@ -75,11 +75,11 @@ export class RefreshToken {
 
     /**
      * トークンの発行
-     * @param frontUserId
+     * @param userId
      * @param config
      * @returns
      */
-    static async create(frontUserId: FrontUserId, config: EnvConfig) {
+    static async create(userId: UserId, config: EnvConfig) {
 
         const jwtKey = config.refreshTokenJwtKey;
         const expires = config.refreshTokenExpires;
@@ -92,7 +92,7 @@ export class RefreshToken {
             throw Error(`設定ファイルにリフレッシュトークンの有効期限が設定されていません。`);
         }
 
-        const id = frontUserId.value;
+        const id = userId.value;
 
         if (!id) {
             throw Error(`リフレッシュトークンの作成にはユーザーIDが必要です。`);
@@ -102,7 +102,7 @@ export class RefreshToken {
         const expiresSec = parseDuration(expires) / 1000;
 
         const payload = {
-            sub: `${id}`,
+            sub: id,
             iat: now,
             exp: now + expiresSec,
             sessionStartedAt: now,
@@ -171,17 +171,11 @@ export class RefreshToken {
 
         const decode = await this.verify();
 
-        if (!decode.sub) {
+        if (!decode.sub || typeof decode.sub !== 'string') {
             throw new Error(`subが設定されていません。`);
         }
 
-        const userId = Number(decode.sub);
-
-        if (Number.isNaN(userId)) {
-            throw new Error(`ユーザーIDが不正です。`);
-        }
-
-        return FrontUserId.of(userId);
+        return UserId.of(decode.sub);
     }
 
     /**

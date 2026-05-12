@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import type { AppEnv } from "../../../type";
+import type { AppEnv } from "../../../types";
 import { getListSample } from "./get-list-sample.controller";
 import { getSampleById } from "./get-sample.controller";
 import { createSample } from "./create-sample.controller";

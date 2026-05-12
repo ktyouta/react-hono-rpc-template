@@ -1,5 +1,5 @@
-import type { FrontUserMaster } from "../../infrastructure/db";
-import type { FrontUserId } from "../../domain";
+import type { UserMaster } from "../../infrastructure/db";
+import type { UserId } from "../../domain";
 import type { IAuthRepository } from "../repository";
 
 /**
@@ -12,7 +12,7 @@ export class AuthService {
    * ユーザーIDでユーザー情報を取得
    * @param userId ユーザーID
    */
-  async getUserById(userId: FrontUserId): Promise<FrontUserMaster | undefined> {
+  async getUserById(userId: UserId): Promise<UserMaster | undefined> {
     return await this.repository.findByUserId(userId);
   }
 }

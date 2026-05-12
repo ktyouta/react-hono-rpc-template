@@ -1,5 +1,4 @@
 import { and, eq } from "drizzle-orm";
-import { FLG } from "../../../constant";
 import type { Database } from "../../../infrastructure/db";
 import { sample } from "../../../infrastructure/db";
 import type { IDeleteSampleRepository } from "./delete-sample.repository.interface";
@@ -18,10 +17,10 @@ export class DeleteSampleRepository implements IDeleteSampleRepository {
     const result = await this.db
       .update(sample)
       .set({
-        deleteFlg: FLG.ON,
+        deleteFlg: true,
         updatedAt: now,
       })
-      .where(and(eq(sample.id, id), eq(sample.deleteFlg, FLG.OFF)))
+      .where(and(eq(sample.id, id), eq(sample.deleteFlg, false)))
       .returning();
     return result.length > 0;
   }

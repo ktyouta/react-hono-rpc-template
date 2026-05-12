@@ -1,6 +1,6 @@
 import { Context, Hono } from "hono";
 import { cors } from "hono/cors";
-import { frontUser, frontUserLogin, frontUserLogout, frontUserPassword, health, refresh, sample, verify } from "./api";
+import { user, userLogin, userLogout, userPassword, health, refresh, sample, verify } from "./api";
 import {
   accessLogMiddleware,
   createDbClientMiddleware,
@@ -9,7 +9,7 @@ import {
   notFoundHandler,
   requestIdMiddleware,
 } from "./middleware";
-import type { AppEnv } from "./type";
+import type { AppEnv } from "./types";
 
 const app = new Hono<AppEnv>();
 
@@ -31,6 +31,7 @@ app.use(
       'Accept',
       'Authorization',
     ],
+    exposeHeaders: ['Content-Disposition'],
   })
 );
 app.use("*", requestIdMiddleware);
@@ -45,12 +46,12 @@ app.notFound(notFoundHandler);
 const routes = app
   .route("/", health)
   .route("/", sample)
-  .route("/", frontUser)
-  .route("/", frontUserLogin)
+  .route("/", user)
+  .route("/", userLogin)
   .route("/", refresh)
   .route("/", verify)
-  .route("/", frontUserLogout)
-  .route("/", frontUserPassword);
+  .route("/", userLogout)
+  .route("/", userPassword);
 
 // RPC用の型エクスポート
 export type AppType = typeof routes;

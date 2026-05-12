@@ -1,6 +1,6 @@
-import type { NotFoundHandler } from "hono";
+﻿import type { NotFoundHandler } from "hono";
 import { HTTP_STATUS } from "../constant";
-import type { AppEnv } from "../type";
+import type { AppEnv } from "../types";
 
 /**
  * 404ハンドラー

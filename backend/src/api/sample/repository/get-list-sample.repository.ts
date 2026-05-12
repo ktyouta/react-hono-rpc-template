@@ -1,5 +1,4 @@
 import { eq } from "drizzle-orm";
-import { FLG } from "../../../constant";
 import type { Database, Sample } from "../../../infrastructure/db";
 import { sample } from "../../../infrastructure/db";
 import type { IGetListSampleRepository } from "./get-list-sample.repository.interface";
@@ -17,6 +16,6 @@ export class GetListSampleRepository implements IGetListSampleRepository {
     return await this.db
       .select()
       .from(sample)
-      .where(eq(sample.deleteFlg, FLG.OFF));
+      .where(eq(sample.deleteFlg, false));
   }
 }

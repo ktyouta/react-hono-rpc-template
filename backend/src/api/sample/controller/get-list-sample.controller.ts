@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
-import type { AppEnv } from "../../../type";
+import type { AppEnv } from "../../../types";
 import { GetListSampleResponseDto } from "../dto";
 import { GetListSampleRepository } from "../repository";
 import { GetListSampleService } from "../service";

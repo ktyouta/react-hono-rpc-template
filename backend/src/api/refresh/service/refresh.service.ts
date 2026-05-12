@@ -1,5 +1,5 @@
-import type { FrontUserMaster } from "../../../infrastructure/db";
-import type { FrontUserId } from "../../../domain";
+import type { UserMaster } from "../../../infrastructure/db";
+import type { UserId } from "../../../domain";
 import type { IRefreshRepository } from "../repository";
 
 /**
@@ -11,7 +11,7 @@ export class RefreshService {
   /**
    * ユーザー情報を取得
    */
-  async getUser(userId: FrontUserId): Promise<FrontUserMaster | undefined> {
+  async getUser(userId: UserId): Promise<UserMaster | undefined> {
     return await this.repository.findByUserId(userId);
   }
 }

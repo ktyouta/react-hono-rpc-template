@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { API_ENDPOINT, HTTP_STATUS } from "../../../constant";
 import { AccessToken, Cookie, RefreshToken } from "../../../domain";
-import type { AppEnv } from "../../../type";
+import type { AppEnv } from "../../../types";
 import { RefreshRepository } from "../repository";
 import { RefreshService } from "../service";
 

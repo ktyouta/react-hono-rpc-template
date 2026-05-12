@@ -1,7 +1,7 @@
 import { sign, verify } from "hono/jwt";
 import type { EnvConfig } from "../../config";
 import { parseDuration } from "../../util";
-import { FrontUserId } from "../front-user-id";
+import { UserId } from "../user-id";
 import { Header } from "../header/header";
 import { AccessTokenError } from "./access-token.error";
 
@@ -44,11 +44,11 @@ export class AccessToken {
 
     /**
      * トークンの発行
-     * @param frontUserId
+     * @param userId
      * @param config
      * @returns
      */
-    static async create(frontUserId: FrontUserId, config: EnvConfig) {
+    static async create(userId: UserId, config: EnvConfig) {
 
         const jwtKey = config.accessTokenJwtKey;
         const expires = config.accessTokenExpires;
@@ -61,7 +61,7 @@ export class AccessToken {
             throw Error(`設定ファイルにアクセストークンの有効期限が設定されていません。`);
         }
 
-        const id = frontUserId.value;
+        const id = userId.value;
 
         if (!id) {
             throw Error(`アクセストークンの作成にはユーザーIDが必要です。`);
@@ -71,7 +71,7 @@ export class AccessToken {
         const expiresSec = parseDuration(expires) / 1000;
 
         const payload = {
-            sub: `${id}`,
+            sub: id,
             iat: now,
             exp: now + expiresSec,
         };
@@ -111,17 +111,11 @@ export class AccessToken {
 
         const decode = await this.verify();
 
-        if (!decode.sub) {
+        if (!decode.sub || typeof decode.sub !== 'string') {
             throw new Error(`subが設定されていません。`);
         }
 
-        const userId = Number(decode.sub);
-
-        if (Number.isNaN(userId)) {
-            throw new Error(`ユーザーIDが不正です。`);
-        }
-
-        return FrontUserId.of(userId);
+        return UserId.of(decode.sub);
     }
 
     get token() {

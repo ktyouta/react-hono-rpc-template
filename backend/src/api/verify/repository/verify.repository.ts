@@ -1,8 +1,7 @@
 import { and, eq } from "drizzle-orm";
-import { FLG } from "../../../constant";
-import type { FrontUserId } from "../../../domain";
-import type { Database, FrontUserMaster } from "../../../infrastructure/db";
-import { frontUserMaster } from "../../../infrastructure/db";
+import type { UserId } from "../../../domain";
+import type { Database, UserMaster } from "../../../infrastructure/db";
+import { userMaster } from "../../../infrastructure/db";
 import type { IVerifyRepository } from "./verify.repository.interface";
 
 /**
@@ -15,14 +14,14 @@ export class VerifyRepository implements IVerifyRepository {
      * ユーザーIDでユーザー情報を取得
      * @param userId ユーザーID
      */
-    async findByUserId(userId: FrontUserId): Promise<FrontUserMaster | undefined> {
+    async findByUserId(userId: UserId): Promise<UserMaster | undefined> {
         const result = await this.db
             .select()
-            .from(frontUserMaster)
+            .from(userMaster)
             .where(
                 and(
-                    eq(frontUserMaster.id, userId.value),
-                    eq(frontUserMaster.deleteFlg, FLG.OFF)
+                    eq(userMaster.id, userId.value),
+                    eq(userMaster.deleteFlg, false)
                 )
             );
         return result[0];

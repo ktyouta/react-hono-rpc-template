@@ -3,8 +3,8 @@ import { LoginContainer } from '@/features/login/components/login-container';
 import { SignupContainer } from '@/features/signup/components/signup-container';
 import { UpdatePasswordContainer } from '@/features/updatepassword/components/update-password-container';
 import { UpdateUserContainer } from '@/features/updateuser/components/update-user-container';
-import { lazy } from 'react';
-import { useRoutes } from 'react-router-dom';
+import { useEffect, lazy } from 'react';
+import { useLocation, useNavigationType, useRoutes } from 'react-router-dom';
 import { GuestRoute } from './guest-route';
 import { ProtectedRoute } from './protected-route';
 
@@ -76,5 +76,14 @@ const routerList = [
 
 export const AppRouter = () => {
     const router = useRoutes(routerList);
+    const { pathname } = useLocation();
+    const navigationType = useNavigationType();
+
+    useEffect(() => {
+        if (navigationType !== "POP") {
+            window.scrollTo(0, 0);
+        }
+    }, [pathname]);
+
     return router;
 };
