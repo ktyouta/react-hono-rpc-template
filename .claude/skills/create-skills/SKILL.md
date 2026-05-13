@@ -67,3 +67,132 @@ Claude Code 用の Skill を、
         │
         └── scripts/                    # 補助スクリプト置き場（任意）
                                         # shell/python/node等の自動処理
+```
+
+---
+
+## Instructions
+
+### 1. Skill の目的を明確化する
+
+最初に以下を定義する：
+
+- この Skill は何をするか
+- どんな時に使うか
+- どんな入力を受けるか
+- どんな出力を返すか
+
+---
+
+### 2. frontmatter を生成する
+
+必ず以下を含める：
+
+```yaml
+name:
+description:
+version:
+```
+
+description には：
+
+- Skill の目的
+- 使用シーン
+- trigger word
+
+を含める。
+
+---
+
+### 3. SKILL.md を生成する
+
+必ず以下の構造を含める：
+
+```md
+# Skill Name
+
+## Overview
+
+## Instructions
+
+## Examples
+```
+
+---
+
+### 4. examples を追加する
+
+可能な限り：
+
+```txt
+examples/
+├── good-example.md
+├── bad-example.md
+└── expected-output.md
+```
+
+を追加する。
+
+Claude は説明文より
+Few-shot examples を強く参照するため、
+examples を優先する。
+
+---
+
+### 5. 単一責務を守る
+
+1 Skill に複数責務を持たせすぎない。
+
+Bad:
+
+```txt
+fullstack-everything-skill
+```
+
+Good:
+
+```txt
+frontend-review
+backend-review
+commit-message
+```
+
+---
+
+## Constraints
+
+禁止：
+
+- frontmatter の省略
+- examples 無し巨大 Skill
+- 曖昧な description
+- 複数責務 Skill
+- 存在しない Claude Code 機能の記述
+
+---
+
+## Output Rules
+
+必ず以下を出力する：
+
+1. ディレクトリ構成
+2. SKILL.md
+3. examples（必要なら）
+4. templates（必要なら）
+
+---
+
+## Examples
+
+### User Input
+
+```txt
+React レビュー用 Skill を作って
+```
+
+### Expected Output
+
+```txt
+.claude/skills/react-review/
+└── SKILL.md
+```

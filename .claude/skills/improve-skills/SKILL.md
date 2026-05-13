@@ -82,5 +82,208 @@ description を強化する。
 
 Bad:
 
-```yaml id="o8e8cv"
+```yaml
 description: React review
+```
+
+Good:
+
+```yaml
+description: |
+  React コンポーネントレビューを行う Skill。
+
+  使用シーン：
+  - PRレビュー
+  - hooks確認
+  - rendering最適化
+
+  トリガーワード：
+  - React review
+  - コンポーネントレビュー
+  - useEffect確認
+
+  実行タイミング：
+  - React コンポーネント実装後
+  - PR作成前
+```
+
+---
+
+### 3. examples を強化する
+
+examples が不足している場合：
+
+```txt
+examples/
+├── good-example.md
+├── bad-example.md
+└── expected-output.md
+```
+
+を提案または生成する。
+
+Claude は説明文より
+Few-shot examples を強く参照するため、
+examples は優先的に改善する。
+
+---
+
+### 4. Instructions を整理する
+
+以下を確認する：
+
+- 手順が曖昧ではないか
+- Claude が実行順序を理解できるか
+- 長文になりすぎていないか
+- 箇条書き化できるか
+
+必要なら：
+
+- Steps
+- Constraints
+- Output Rules
+- Anti Patterns
+
+を追加する。
+
+---
+
+### 5. 責務分離を確認する
+
+1 Skill に責務が多すぎる場合、
+Skill 分割を提案する。
+
+Bad:
+
+```txt
+fullstack-review
+```
+
+Good:
+
+```txt
+frontend-review
+backend-review
+security-review
+```
+
+---
+
+### 6. trigger word を追加する
+
+Claude が Skill を発火しやすいよう、
+description に：
+
+- 日本語
+- 英語
+- 類義語
+- 実運用ワード
+
+を追加する。
+
+---
+
+### 7. Claude が迷いやすい箇所を除去する
+
+以下を減らす：
+
+- 抽象表現
+- 曖昧な指示
+- 長すぎる説明
+- 複数責務
+- 不明瞭な出力形式
+
+---
+
+## Improvement Checklist
+
+改善時は以下を確認する。
+
+- frontmatter がある
+- description が具体的
+- trigger word がある
+- examples がある
+- 単一責務
+- 手順が明確
+- Claude が実行しやすい
+- 出力形式が定義されている
+- 曖昧表現が少ない
+
+---
+
+## Constraints
+
+以下は禁止：
+
+- JSON 化
+- frontmatter 削除
+- examples 削除
+- 責務追加しすぎ
+- 巨大 Skill 化
+- 曖昧な改善提案のみ
+- 実行不能な手順追加
+
+---
+
+## Output Rules
+
+改善時は以下を出力する：
+
+1. 問題点
+2. 改善理由
+3. 修正内容
+4. 修正後サンプル
+5. 必要なら分割提案
+
+---
+
+## Examples
+
+### User Input
+
+```txt
+この Skill の精度を改善して
+```
+
+### Expected Output
+
+```md
+改善点:
+- trigger word 不足
+- examples 不足
+- Instructions が曖昧
+
+改善内容:
+- examples/ を追加
+- trigger word を追加
+- 手順を番号化
+
+推奨追加:
+examples/
+├── good-example.md
+└── expected-output.md
+```
+
+---
+
+## Best Practices
+
+推奨：
+
+- 小さい Skill
+- examples 重視
+- trigger word 強化
+- 単一責務
+- Claude が判断しやすい構造
+
+---
+
+## Anti Patterns
+
+避ける：
+
+- 巨大 Skill
+- examples 無し
+- description が短すぎる
+- 「柔軟に対応する」だけの説明
+- Claude の推測頼み

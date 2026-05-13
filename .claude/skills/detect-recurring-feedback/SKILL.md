@@ -48,7 +48,7 @@ version: 1.0.0
 - 新規 Skill 作成
 - 既存 Skill 強化
 - examples 追加
-- rules 分離
+- Skill 分割
 
 を提案する。
 
@@ -121,7 +121,81 @@ Claude Code 環境を継続的に改善することを目的とする。
 
 例：
 
-```txt id="shk8d2"
+```txt
 react-hooks-review
 naming-review
 null-safety-review
+```
+
+---
+
+### 5. Skill が既に存在する場合
+
+既存 Skill の強化を提案する。
+
+改善例：
+
+- examples 追加
+- trigger word 強化
+- Instructions 明確化
+- recurring anti-pattern 追加
+- Output Rules 強化
+
+---
+
+### 6. recurring pattern を Skill 化すべきか判定する
+
+以下を満たす場合、
+Skill 化を推奨する：
+
+- 3回以上繰り返されている
+- 毎回同じ説明が必要
+- チーム共通ルール化できる
+- Claude が継続的に誤る
+- review 工数削減効果が高い
+
+---
+
+## Output Rules
+
+以下形式で出力する：
+
+```md
+## Recurring Feedback Analysis
+
+### 検出ルール
+- useEffect dependency 指摘
+- boolean 命名指摘
+
+### 推奨アクション
+- react-hooks-review 作成
+- naming-review 強化
+
+### 改善理由
+- 同一指摘が複数回発生
+- Claude が継続的に誤っている
+```
+
+---
+
+## Constraints
+
+禁止：
+
+- 単発指摘の Skill 化
+- 巨大 Skill 化
+- 抽象的すぎる Skill 名
+- examples 無し提案
+- 責務過多 Skill
+
+---
+
+## Best Practices
+
+推奨：
+
+- 小さい Skill
+- recurring pattern 単位で分離
+- examples 重視
+- trigger word 強化
+- review 指摘を継続学習
