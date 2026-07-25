@@ -12,6 +12,10 @@
 ```
 ## 差分設計
 
+### horizontal-scope 実行結果
+- horizontal-scope 実行済み、追加対象なし
+  - 理由: デフォルト優先度は `create-task.service.ts` の定数1箇所のみで定義されており、他ファイルに同じ値のハードコードはない
+
 ### 変更内容
 - [変更前]: タスク作成時のデフォルト優先度 = "medium"
 - [変更後]: タスク作成時のデフォルト優先度 = "low"
@@ -82,3 +86,63 @@
 ```
 
 その後、Step 1 の「改修内容の把握」へ進む。
+
+---
+
+## ケース3: schema.ts を変更するケース
+
+### 状況
+- テーブルに新規カラムを追加する
+
+### Step 5 実装時の必須操作
+1. `npm run db:generate` でマイグレーションファイルを生成
+2. `npm run db:migrate:local` でローカル D1 に反映（未実行だと Step 7 の完了報告後もエラーが残る）
+
+### Step 10 の判定
+- `docs/[機能名]/spec.md` が存在しない場合は spec-review をスキップし、そのまま Step 11 へ進む
+
+---
+
+## ケース4: OK — horizontal-scope で他画面への対応対象を発見した
+
+### 状況
+- 依頼:「一覧画面のカードスタイルを詳細画面と揃えたい」で、対象が複数画面にまたがる
+
+### Step 4 出力（抜粋）
+
+```
+## 差分設計
+
+### horizontal-scope 実行結果
+- 対象ファイル:
+  - frontend/src/features/item/components/item-list.tsx（同じカードコンテナパターンを使用）
+  - frontend/src/features/item/components/item-summary.tsx（同じカードコンテナパターンを使用）
+- 他に同パターンを使う画面はなし
+
+### 変更内容
+- [変更前]: 各画面のカードが bg-white rounded-2xl border border-stone-200 ...
+- [変更後]: item-detail.tsx と同じ border-[3px] border-stone-300 ... に統一
+...
+```
+
+---
+
+## ケース5: NG — horizontal-scope を実行せず Step 4 に進んだ（禁止パターン）
+
+### 状況（悪い例）
+
+```
+## 差分設計
+
+### 変更内容
+- [変更前]: ...
+- [変更後]: ...
+
+### バックエンド変更点
+...
+```
+
+### 何が問題か
+- 「horizontal-scope 実行結果」欄が存在しない。この欄を省略した差分設計は Step 4 の出力として不完全であり、Step 3 が実行されていないことを意味する
+- 「対応対象は今回のファイルだけのはず」という思い込みで horizontal-scope を省略すると、実は同じパターンを持つ他画面を見落とす（水平展開漏れ）リスクが残る
+- 修正方針: Step 4 を書く前に必ず horizontal-scope を実行し、その結果（対象ファイル一覧、または「対応不要」とその理由）を差分設計の先頭に記載してから残りを書く

@@ -120,22 +120,23 @@ description には：
 
 ---
 
-### 4. examples を追加する
+### 4. examples/expected-output.md を必ず作成する
 
-可能な限り：
+Skill を新規作成するときは、**必ず** `examples/expected-output.md` を作成する。
 
 ```txt
 examples/
-├── good-example.md
-├── bad-example.md
-└── expected-output.md
+└── expected-output.md   ← 必須
 ```
 
-を追加する。
+`expected-output.md` には以下を含める：
+- 代表的な入力状況（ケース名 + 状況の説明）
+- その状況での期待出力（SKILL.md の Output Format に完全に沿った形式）
+- OK / NG の両パターンを最低1件ずつ
 
-Claude は説明文より
-Few-shot examples を強く参照するため、
-examples を優先する。
+Claude は説明文より Few-shot examples を強く参照するため、
+expected-output.md は Skill の精度を左右する最重要ファイルである。
+省略・後回しは禁止する。
 
 ---
 
@@ -158,6 +159,26 @@ Skill を作る前に、以下の3種類のどれに該当するかを判断す�
 ```
 
 該当するスキル例：frontend-review / backend-review / comments-review / architecture-review
+
+---
+
+#### 共通：強制発火させる場合は「必ず」を入れる
+
+トリガー種別によらず、Claude に確実に発火させたい場合は
+「以下のような場合に**必ず**使用する：」と明記する。
+
+```
+# 「必ず」あり（強制）
+以下のような場合に必ず使用する：
+- ...
+
+# 「必ず」なし（任意）
+以下のような場合に使用する：
+- ...
+```
+
+「必ず」がないと、Claude が borderline なケースでスキップする可能性がある。
+強制発火が意図であれば必ず入れること。
 
 ---
 
@@ -220,6 +241,8 @@ commit-message
 - 曖昧な description
 - 複数責務 Skill
 - 存在しない Claude Code 機能の記述
+- CLAUDE.md・skills・agents の変更をユーザーの承認なしに実施すること — 変更内容を先に提示し、承認を得てから実施する
+- スキルの存在確認を Glob の結果だけで判断すること — Glob はパス区切り・大文字小文字の違いで検出漏れが発生するため、Glob で見つからない場合でも Test-Path または Read で二重確認すること
 
 ---
 

@@ -109,22 +109,21 @@ description: |
 
 ---
 
-### 3. examples を強化する
+### 3. examples/expected-output.md を必ず確認する
 
-examples が不足している場合：
+`examples/expected-output.md` が存在しない場合、**必ず新規作成する**（提案にとどめない）。
 
-```txt
-examples/
-├── good-example.md
-├── bad-example.md
-└── expected-output.md
-```
+`expected-output.md` に含めるもの：
+- 代表的な入力状況（ケース名 + 状況の説明）
+- その状況での期待出力（SKILL.md の Output Format に完全に沿った形式）
+- OK / NG の両パターンを最低1件ずつ
 
-を提案または生成する。
+既に存在する場合は内容が SKILL.md の Output Format と一致しているか確認し、
+ずれがあれば修正する。
 
 Claude は説明文より
 Few-shot examples を強く参照するため、
-examples は優先的に改善する。
+expected-output.md は Skill の精度を左右する最重要ファイルである。
 
 ---
 
@@ -198,6 +197,18 @@ create-skills / improve-skills → 「Skill を作って」「Skill を改善し
 - 日本語・英語・類義語
 - 実運用で実際に使いそうな言葉
 
+強制発火させたいトリガーに「必ず」が入っているか確認する。
+
+```
+# 「必ず」あり（強制）→ borderline なケースでスキップされない
+以下のような場合に必ず使用する：
+
+# 「必ず」なし（任意）→ Claude が判断してスキップする可能性がある
+以下のような場合に使用する：
+```
+
+入っていない場合は「以下のような場合に必ず使用する：」に修正する。
+
 ---
 
 ### 7. Claude が迷いやすい箇所を除去する
@@ -219,6 +230,7 @@ create-skills / improve-skills → 「Skill を作って」「Skill を改善し
 - frontmatter がある
 - description が具体的
 - trigger word がある（スキルを意識せず自然に発する言葉か）
+- 強制発火が必要な箇所に「必ず」が使われているか
 - examples がある
 - 単一責務
 - 手順が明確
@@ -239,6 +251,9 @@ create-skills / improve-skills → 「Skill を作って」「Skill を改善し
 - 巨大 Skill 化
 - 曖昧な改善提案のみ
 - 実行不能な手順追加
+- 行動規則（レビュー観点・設計指針・チェックルール）を memory に保存すること — 行動規則は skill に書く。memory はプロジェクト文脈・ユーザー好みなどの事実情報のみ
+- CLAUDE.md・skills・agents の変更をユーザーの承認なしに実施すること — 変更内容を先に提示し、承認を得てから実施する
+- 会話内で使った「変更1」「案B」「パターンB」などの内部番号・記号をそのまま使うこと — ユーザーや将来の自分はその番号の文脈を持っていないため、常にゼロベースで内容を説明し直す
 
 ---
 

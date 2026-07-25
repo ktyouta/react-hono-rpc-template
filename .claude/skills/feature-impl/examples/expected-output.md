@@ -78,7 +78,9 @@
 - **違反内容**: Presentational コンポーネントに `useState` が定義されている
 - **修正方針**: Container に移動する
 
-→ 修正後に再レビューします。
+→ 修正しました。
+
+NG 累計: 1 件 → Step 11 で skill-gap-detector を必ず実行すること
 ```
 
 ### Step 11 出力（NG 対応後の skill-gap-detector）

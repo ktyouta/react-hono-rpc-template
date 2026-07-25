@@ -72,9 +72,11 @@ UI 変更を含まない場合はこの Step をスキップする。
 
 ---
 
-### Step 3: horizontal-scope で影響範囲を洗い出す
+### Step 3: horizontal-scope で影響範囲を洗い出す【必須・ブロッキング】
 
 horizontal-scope を実行し、今回の変更パターンと同じ対応が必要なファイルを特定する。
+
+**このステップを実行しない限り Step 4 に進んではならない。** Step 4 の差分設計テンプレートは「horizontal-scope 実行結果」を記載する欄を含んでおり、この欄は horizontal-scope を実際に実行しないと埋められない（「対応不要と判断したためスキップ」は理由にならない。対応不要という判断自体を horizontal-scope の実行結果として記載する）。
 
 ---
 
@@ -84,6 +86,9 @@ horizontal-scope を実行し、今回の変更パターンと同じ対応が必
 
 ```
 ## 差分設計
+
+### horizontal-scope 実行結果
+- 対象ファイル: [一覧を列挙。他に対応が必要なファイルがない場合も「horizontal-scope 実行済み、追加対象なし」と明記する]
 
 ### 変更内容
 - [変更前]: ...
@@ -137,6 +142,7 @@ Step 4 の差分設計に沿ってバックエンドを変更する。
 
 - `schema.ts` を変更した場合は `npm run db:generate` を実行し、生成された `drizzle/*.sql` と `drizzle/meta/` の変更をセットで扱う
 - `drizzle/*.sql` を手動で新規作成・編集してはならない（`db:generate` が対応できない変更は `db:generate --custom` を使う）
+- `schema.ts` を変更した場合、`db:generate` の後に必ず `npm run db:migrate:local` を実行してローカル D1 に反映する。`db:generate` はマイグレーションファイルの生成のみで DB 状態には反映されないため、適用を怠るとユーザーが実際に画面を開くまで SQL エラーが検出されない
 
 ---
 
@@ -209,7 +215,7 @@ Step 4 の差分設計に沿ってフロントエンドを変更する。
 
 ### Step 10: 仕様突き合わせ
 
-spec-review を実行する。
+`docs/[機能名]/spec.md` が存在する場合のみ spec-review を実行する。存在しない場合はスキップする（Step 4 の仕様要件チェックと同じ判定基準）。
 
 ---
 
@@ -229,9 +235,11 @@ Step 6・9・10 でいずれかの NG があった場合、skill-gap-detector �
 ## Constraints
 
 - 各 Step は順番通りに実行する（並行実行しない）
+- Step 3（horizontal-scope）は省略しない。Step 4 の差分設計に「horizontal-scope 実行結果」欄を必ず含める（対応不要と判断した場合もその旨を明記する。無言でスキップしない）
 - ユーザー確認（Step 4・7）では必ずユーザーの明示的な OK を得てから次に進む
 - 既存テストが存在する場合は、変更後も通過するか確認する
 - 指示にない機能を変更に追加しない
 - エラーや NG を無視して次のステップに進まない
 - schema.ts を変更した場合は必ず `db:generate` を実行する。`drizzle/*.sql` を手動作成しない
+- schema.ts を変更した場合は `db:generate` に加えて必ず `db:migrate:local` を実行し、ローカル D1 に反映する
 - コーディング規約・チェック項目の追加は skill ファイルにのみ行う。skill で対応できる内容を CLAUDE.md に追記しない
